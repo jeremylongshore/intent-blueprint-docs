@@ -11,7 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18, 20, 22]
+        # vitest 4.x (devDep) requires node ^20 || ^22 || >=24; node 18 is EOL
+        # (2025-04-30) and cannot run the test steps (rolldown imports
+        # node:util's styleText, added in node 20.12/22).
+        node-version: [20, 22, 24]
 
     steps:
       - uses: actions/checkout@v4
@@ -20,10 +23,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          # cache: 'npm'  # Disabled until package-lock.json is committed
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build all packages
         run: npm run build
@@ -47,10 +50,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          # cache: 'npm'  # Disabled until package-lock.json is committed
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Type check
         run: npm run build
