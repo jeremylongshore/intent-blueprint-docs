@@ -5,9 +5,6 @@ on:
       site_url:
         description: "Public URL to audit (https://...)"
         required: false
-  # schedule disabled — burns Actions minutes
-  # schedule:
-  #   - cron: "0 4 * * 1"   # weekly, 04:00 UTC Mondays
 permissions:
   contents: read
 jobs:
