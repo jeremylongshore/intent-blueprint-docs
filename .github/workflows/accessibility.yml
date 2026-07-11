@@ -1,9 +1,6 @@
 name: Accessibility Audit (optional)
 on:
   workflow_dispatch:
-  # schedule disabled — burns Actions minutes
-  # schedule:
-  #   - cron: "0 5 * * 1"   # weekly, 05:00 UTC Mondays
 permissions:
   contents: read
 jobs:
