@@ -35,6 +35,9 @@ jobs:
       - name: Check generated mirrors before build
         run: npm run templates:check
 
+      - name: Lint source and tests
+        run: npm run lint
+
       - name: Build all packages
         run: npm run build
 

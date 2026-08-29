@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: "18" }  # cache disabled until package-lock.json is committed
+        with: { node-version: "20" }
 
       - name: Skip if no URL
         run: |

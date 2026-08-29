@@ -22,6 +22,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Deterministic generation receipts, packed-consumer CLI/MCP protocol smoke tests, CycloneDX SBOM, checksums, build attestations, and release receipts.
 - Current audit-harness policy pinning, conformance, and change-boundary enforcement.
 
+### Security
+
+- Raised the Handlebars dependency floor to 4.7.9; the lockfile also resolves Picomatch 4.0.4 and Nodemailer 9.0.6, superseding the pending security update PRs.
+
 ## [2.9.0] - 2026-03-18
 
 ### Added
