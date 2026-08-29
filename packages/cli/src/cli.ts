@@ -23,7 +23,7 @@ const program = new Command();
 program
   .name('blueprint')
   .description('Intent Blueprint - Enterprise AI Documentation Generator')
-  .version('2.7.0');
+  .version('2.9.0');
 
 // Init command
 program

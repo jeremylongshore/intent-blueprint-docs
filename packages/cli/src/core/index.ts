@@ -19,6 +19,14 @@ export interface TemplateContext {
   features?: string[];
   timeline?: string;
   team?: string;
+  generatedAt?: string;
+  owner?: string;
+  reviewers?: string[];
+  status?: 'draft' | 'in-review' | 'approved';
+  evidence?: string[];
+  assumptions?: string[];
+  unknowns?: string[];
+  sourceRefs?: string[];
   [key: string]: unknown;
 }
 
@@ -35,6 +43,15 @@ export interface TemplateInfo {
   filename: string;
   category: string;
   description: string;
+}
+
+export interface GenerationReceipt {
+  schemaVersion: '1.0';
+  templateId: string;
+  templateVersion: string;
+  generatedAt: string;
+  generator: string;
+  sourceRefs: string[];
 }
 
 // Template categories
@@ -104,6 +121,82 @@ export function listTemplates(): TemplateInfo[] {
   });
 }
 
+function resolveTemplate(templateName: string): TemplateInfo {
+  const normalized = templateName.endsWith('.md') ? templateName : `${templateName}.md`;
+  const template = listTemplates().find(item => item.filename === normalized || item.id === templateName);
+
+  if (!template) {
+    throw new Error(`Unknown template ID: ${templateName}`);
+  }
+
+  return template;
+}
+
+function yamlList(values: string[] | undefined): string {
+  if (!values?.length) return '  []';
+  return values.map(value => `  - ${JSON.stringify(value)}`).join('\n');
+}
+
+function renderContextEnvelope(
+  template: TemplateInfo,
+  context: TemplateContext,
+): { markdown: string; receipt: GenerationReceipt } {
+  const generatedAt = context.generatedAt || new Date().toISOString();
+  const receipt: GenerationReceipt = {
+    schemaVersion: '1.0',
+    templateId: template.id,
+    templateVersion: '2.9.0-legacy',
+    generatedAt,
+    generator: '@intentsolutions/blueprint',
+    sourceRefs: context.sourceRefs || [],
+  };
+  const markdown = `---
+blueprint:
+  schema_version: "${receipt.schemaVersion}"
+  template_id: ${JSON.stringify(receipt.templateId)}
+  template_version: ${JSON.stringify(receipt.templateVersion)}
+  generated_at: ${JSON.stringify(receipt.generatedAt)}
+  generator: ${JSON.stringify(receipt.generator)}
+  status: ${JSON.stringify(context.status || 'draft')}
+  project: ${JSON.stringify(context.projectName)}
+  audience: ${JSON.stringify(context.audience)}
+  owner: ${JSON.stringify(context.owner || '')}
+  reviewers:
+${yamlList(context.reviewers)}
+  source_refs:
+${yamlList(context.sourceRefs)}
+---
+
+> [!IMPORTANT]
+> This is a deterministic Blueprint workbook, not a claim that an AI completed the project analysis. Replace illustrative legacy examples with verified project evidence before approval.
+
+## Project context
+
+- **Project:** ${context.projectName}
+- **Description:** ${context.projectDescription}
+- **Scope:** ${context.scope}
+- **Audience:** ${context.audience}
+- **Project type:** ${context.projectType || 'Unknown'}
+- **Technology constraints:** ${context.techStack?.join(', ') || 'Unknown'}
+
+### Evidence supplied
+
+${context.evidence?.length ? context.evidence.map(item => `- ${item}`).join('\n') : '- None supplied.'}
+
+### Assumptions requiring validation
+
+${context.assumptions?.length ? context.assumptions.map(item => `- ${item}`).join('\n') : '- None recorded.'}
+
+### Known unknowns
+
+${context.unknowns?.length ? context.unknowns.map(item => `- ${item}`).join('\n') : '- None recorded.'}
+
+---
+`;
+
+  return { markdown, receipt };
+}
+
 /**
  * Get templates for a specific scope
  */
@@ -115,16 +208,17 @@ export function getTemplatesForScope(scope: 'mvp' | 'standard' | 'comprehensive'
 /**
  * Read and compile a template
  */
-export function compileTemplate(templateName: string): HandlebarsTemplateDelegate {
+export function compileTemplate(templateName: string, generatedAt?: string): HandlebarsTemplateDelegate {
   const templatesDir = getTemplatesDir();
-  const templatePath = join(templatesDir, templateName.endsWith('.md') ? templateName : `${templateName}.md`);
-
-  if (!existsSync(templatePath)) {
-    throw new Error(`Template not found: ${templateName}`);
-  }
+  const template = resolveTemplate(templateName);
+  const templatePath = join(templatesDir, template.filename);
 
   const templateContent = readFileSync(templatePath, 'utf-8');
-  const withDate = templateContent.replace(/\{\{DATE\}\}/g, new Date().toISOString().split('T')[0]);
+  const generationDate = generatedAt ? new Date(generatedAt) : new Date();
+  if (Number.isNaN(generationDate.getTime())) {
+    throw new Error(`Invalid generatedAt timestamp: ${generatedAt}`);
+  }
+  const withDate = templateContent.replace(/\{\{DATE\}\}/g, generationDate.toISOString().split('T')[0]);
 
   return Handlebars.compile(withDate);
 }
@@ -133,16 +227,20 @@ export function compileTemplate(templateName: string): HandlebarsTemplateDelegat
  * Generate a single document from a template
  */
 export function generateDocument(templateName: string, context: TemplateContext): GeneratedDocument {
-  const template = compileTemplate(templateName);
-  const content = template(context);
-
-  const info = listTemplates().find(t => t.filename === templateName || t.id === templateName);
+  const info = resolveTemplate(templateName);
+  const template = compileTemplate(info.filename, context.generatedAt);
+  const rendered = template(context);
+  const { markdown } = renderContextEnvelope(info, context);
+  const safeProjectName = context.projectName
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '') || 'project';
 
   return {
-    name: info?.name || templateName,
-    filename: `${context.projectName.toLowerCase().replace(/\s+/g, '-')}-${templateName}`,
-    content,
-    category: info?.category || 'Other'
+    name: info.name,
+    filename: `${safeProjectName}-${info.filename}`,
+    content: `${markdown}\n${rendered}`,
+    category: info.category
   };
 }
 

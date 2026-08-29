@@ -1,0 +1,7 @@
+interface:
+  display_name: "Blueprint Docs"
+  short_description: "Evidence-backed product and engineering docs"
+  brand_color: "#2457D6"
+  default_prompt: "Use $blueprint-docs to create the smallest evidence-backed documentation set for this project."
+policy:
+  allow_implicit_invocation: true

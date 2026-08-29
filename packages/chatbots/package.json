@@ -12,7 +12,7 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "clean": "rm -rf dist",
-    "test": "vitest",
+    "test": "vitest --passWithNoTests",
     "start:slack": "node dist/slack/app.js",
     "start:discord": "node dist/discord/app.js"
   },
@@ -27,24 +27,24 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/intent-solutions-io/intent-blueprint-docs.git",
+    "url": "git+https://github.com/jeremylongshore/intent-blueprint-docs.git",
     "directory": "packages/chatbots"
   },
   "dependencies": {
     "@intentsolutions/blueprint": "*",
     "@slack/bolt": "^3.17.0",
     "discord.js": "^14.18.0",
-    "nodemailer": "^7.0.12",
+    "nodemailer": "^9.0.6",
     "archiver": "^6.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "@types/nodemailer": "^6.4.0",
+    "@types/nodemailer": "^8.0.1",
     "@types/archiver": "^6.0.0",
     "typescript": "^5.3.0",
     "vitest": "^4.0.0"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   }
 }

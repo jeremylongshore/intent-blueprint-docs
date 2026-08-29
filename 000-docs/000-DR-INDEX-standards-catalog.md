@@ -36,3 +36,5 @@ All docs follow format: `NNN-CC-ABCD-description.md`
 | 007 | OD-OPER | Release and Publishing Guide | Active |
 | 008 | DR-GUID | Plugin Development Guide | Active |
 | 009 | TQ-TEST | Testing and Quality Assurance | Active |
+| 010 | TQ-SOPS | Audit Harness Baseline | Active |
+| 011 | AT-AUDT | Template System Audit and Model-Neutral Modernization | Active |

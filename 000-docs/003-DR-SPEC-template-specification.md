@@ -67,8 +67,10 @@ Each template is a Markdown file in `professional-templates/` with:
 | Placeholder | Replaced With |
 |-------------|--------------|
 | `{{DATE}}` | Current date (ISO 8601) |
-| `{{PROJECT_NAME}}` | User-provided project name |
-| `{{PROJECT_DESC}}` | User-provided description |
+| `{{PROJECT_NAME}}` | Reserved for schema-backed replacement templates; absent from the historical corpus |
+| `{{PROJECT_DESC}}` | Reserved for schema-backed replacement templates; absent from the historical corpus |
+
+Project name, description, audience, evidence, assumptions, unknowns, and provenance are currently rendered through the shared context envelope rather than legacy body placeholders.
 
 ## Rules
 

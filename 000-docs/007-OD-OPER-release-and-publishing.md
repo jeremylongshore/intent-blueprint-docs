@@ -4,22 +4,21 @@
 
 ### npm Packages
 
-Three packages are published to npm:
+Two workspace packages are publishable. The release workflow currently publishes the core product package only:
 
 | Package | Registry | Scope |
 |---------|----------|-------|
-| `@intentsolutions/blueprint` | npm | CLI tool |
-| `@intentsolutions/blueprint-mcp` | npm | MCP server |
-| `@intentsolutions/blueprint-core` | npm | Core engine |
+| `@intentsolutions/blueprint` | npm | CLI, library, templates, and MCP binary |
+| `@intentsolutions/blueprint-chatbots` | npm | Slack and Discord adapters; separately promoted |
 
 ### Release Process
 
-1. **Version bump**: Update `package.json` in each package
+1. **Version bump**: Update the root and product package version together
 2. **Changelog**: Update `CHANGELOG.md` with changes
 3. **Build**: `npm run build` (all packages via Turbo)
 4. **Test**: `npm run test && npm run lint`
 5. **Tag**: `git tag v2.x.x`
-6. **Publish**: `npm publish --workspace=packages/cli` (repeat per package)
+6. **Publish**: `npm publish --workspace=@intentsolutions/blueprint --access public --provenance`
 7. **Push tags**: `git push --tags`
 
 ### Versioning
@@ -60,7 +59,7 @@ This checks:
 
 ### On Release Tag
 1. All CI checks pass
-2. npm publish (scoped packages)
+2. Fail-closed npm publish for `@intentsolutions/blueprint`
 3. GitHub Release created
 
 ## Rollback

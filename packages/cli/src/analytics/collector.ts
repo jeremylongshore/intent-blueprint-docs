@@ -41,7 +41,7 @@ export class AnalyticsCollector {
       version: '1.0.0',
       platform: process.platform,
       nodeVersion: process.version,
-      cliVersion: '2.8.0', // Should be read from package.json
+      cliVersion: '2.9.0', // Kept in sync by the release version gate.
       environment: process.env.NODE_ENV,
     };
   }

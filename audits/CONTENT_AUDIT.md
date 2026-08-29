@@ -1,4 +1,5 @@
 # Content Audit Report — AI DevOps Intent Solutions
+> Historical audit retained for evidence. Superseded by `000-docs/011-AT-AUDT-template-system-modernization.md`; product and compatibility claims below describe the 2025 repository state.
 **Generated:** 2025-10-09
 **Auditor:** Claude Code Content Audit Engine
 **Repository:** ai-devops-intent-solutions (vibe-prd)

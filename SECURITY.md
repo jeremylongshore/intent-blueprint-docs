@@ -24,9 +24,9 @@ We will acknowledge receipt within 48 hours and provide a timeline for a fix wit
 
 The following are in scope:
 
-- `@intentsolutions/blueprint` (CLI)
-- `@intentsolutions/blueprint-mcp` (MCP server)
-- `@intentsolutions/blueprint-core` (core engine)
+- `@intentsolutions/blueprint` (CLI, core library, templates, and MCP binary)
+- `@intentsolutions/blueprint-chatbots` (Slack and Discord adapters)
+- Portable skill and host-adapter manifests
 - Template content that could cause injection or data leakage
 
 Out of scope:

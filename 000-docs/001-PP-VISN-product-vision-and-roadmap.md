@@ -2,12 +2,12 @@
 
 ## Vision
 
-Intent Blueprint Docs transforms project ideas into comprehensive, professional documentation in minutes. It is the standard tool for AI-assisted documentation generation, working natively with Claude, Cursor, VS Code, and any MCP-compatible environment.
+Intent Blueprint Docs is a model-neutral system for creating evidence-backed product and engineering documentation. A portable Agent Skill governs authoring; the deterministic core, CLI, MCP server, and host adapters share the same catalog and integrity contract.
 
 ## Core Value Proposition
 
-- **Speed**: 22 professional documents from a single project description
-- **Quality**: Enterprise-grade templates with consistent structure and formatting
+- **Focus**: Select the smallest useful set instead of generating 22 documents by default
+- **Integrity**: Keep verified facts, derived analysis, assumptions, and unknowns distinct
 - **Flexibility**: CLI, MCP server, IDE integration, and programmatic API
 - **Extensibility**: Plugin system, template marketplace, and custom template packs
 
@@ -27,14 +27,14 @@ Template marketplace, plugin system, and community-contributed template packs fo
 
 ## Current Status
 
-**Version:** 2.0.0 (Beta)
+**Version:** 2.9.0 (modernization release line)
 
 ### Completed
 - 22 professional templates with dynamic date placeholders
 - CLI tool (`@intentsolutions/blueprint`)
-- MCP server (`@intentsolutions/blueprint-mcp`)
-- Core engine (`@intentsolutions/blueprint-core`)
-- Dual AI support (Claude Code CLI + Cursor IDE)
+- MCP server (`blueprint-mcp` binary in `@intentsolutions/blueprint`)
+- Core library (main export of `@intentsolutions/blueprint`)
+- Portable Agent Skill plus Claude, Codex, Cursor, and Gemini adapters
 - Enterprise pipeline with 17-question intake
 - GitHub Actions CI/CD
 - Template marketplace framework
@@ -57,9 +57,8 @@ Template marketplace, plugin system, and community-contributed template packs fo
 
 | Package | Description | Status |
 |---------|-------------|--------|
-| `@intentsolutions/blueprint` | CLI tool | Beta |
-| `@intentsolutions/blueprint-mcp` | MCP server | Beta |
-| `@intentsolutions/blueprint-core` | Core engine | Beta |
+| `@intentsolutions/blueprint` | CLI, library, templates, and MCP binary | Beta |
+| `@intentsolutions/blueprint-chatbots` | Slack and Discord adapters | Beta |
 
 ## Documentation Scopes
 

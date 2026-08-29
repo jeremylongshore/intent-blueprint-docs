@@ -2,7 +2,7 @@
   "name": "intent-blueprint-docs",
   "version": "2.9.0",
   "private": true,
-  "description": "Enterprise-grade AI documentation generator - 22 professional templates with MCP integration",
+  "description": "Model-neutral documentation workbooks, Agent Skill, CLI, and MCP adapter",
   "workspaces": [
     "packages/*"
   ],
@@ -10,25 +10,27 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "test": "turbo run test",
+    "test": "npx vitest run && turbo run test",
     "test:skills": "npx vitest run test/skill-validation.test.ts",
     "test:docs": "npx vitest run test/doc-quality-eval.test.ts",
     "test:evals": "ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY} npx vitest run test/doc-quality-eval.test.ts",
     "clean": "turbo run clean",
-    "verify": "./scripts/verify-templates.sh",
+    "verify": "./scripts/verify-templates.sh && npm run templates:check",
+    "templates:sync": "node scripts/sync-templates.mjs",
+    "templates:check": "node scripts/sync-templates.mjs --check",
     "gen:skill-docs": "npx tsx scripts/gen-skill-docs.ts",
     "skill:check": "npx tsx scripts/gen-skill-docs.ts --dry-run"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/intent-solutions-io/intent-blueprint-docs.git"
+    "url": "git+https://github.com/jeremylongshore/intent-blueprint-docs.git"
   },
   "keywords": [
     "ai-documentation",
     "prd-generator",
     "mcp-server",
-    "claude-code",
-    "cursor-ide",
+    "agent-skills",
+    "model-agnostic",
     "enterprise-templates",
     "documentation-generator",
     "project-requirements"
@@ -36,9 +38,9 @@
   "author": "Jeremy Longshore <jeremy@intentsolutions.io>",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/intent-solutions-io/intent-blueprint-docs/issues"
+    "url": "https://github.com/jeremylongshore/intent-blueprint-docs/issues"
   },
-  "homepage": "https://github.com/intent-solutions-io/intent-blueprint-docs#readme",
+  "homepage": "https://github.com/jeremylongshore/intent-blueprint-docs#readme",
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
     "tsx": "^4.19.0",
@@ -56,7 +58,7 @@
     "ajv": ">=8.17.1"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   },
   "packageManager": "npm@10.0.0"
 }

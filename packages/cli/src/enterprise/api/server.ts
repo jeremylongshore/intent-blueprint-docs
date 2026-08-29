@@ -363,7 +363,7 @@ export class ApiServer {
   private handleHealth(_req: ApiRequest, res: ApiResponseWriter): void {
     const response: HealthCheckResponse = {
       status: 'healthy',
-      version: '2.7.0',
+      version: '2.9.0',
       uptime: Date.now() - this.startTime,
       checks: {
         templates: true,

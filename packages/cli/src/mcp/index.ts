@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Intent Blueprint MCP Server
- * Exposes documentation generation tools to Claude/Cursor via MCP protocol
+ * Model-neutral adapter exposing Blueprint workbook tools over MCP.
  */
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
@@ -22,11 +22,10 @@ import {
 } from '../core/index.js';
 import {
   InterviewEngine,
-  quickInterview,
-  getNextQuestion,
-  getProgress,
   type InterviewAnswers,
 } from '../interview/index.js';
+
+const VERSION = '2.9.0';
 
 // Tool schemas
 const GenerateSchema = z.object({
@@ -35,6 +34,7 @@ const GenerateSchema = z.object({
   scope: z.enum(['mvp', 'standard', 'comprehensive']).default('standard'),
   audience: z.enum(['startup', 'business', 'enterprise']).default('business'),
   outputDir: z.string().optional(),
+  writeFiles: z.boolean().default(false),
   projectType: z.string().optional(),
   techStack: z.array(z.string()).optional(),
 });
@@ -52,19 +52,14 @@ const ListTemplatesSchema = z.object({
 const CustomizeSchema = z.object({
   templateId: z.string(),
   projectName: z.string(),
+  projectDescription: z.string().default(''),
   customFields: z.record(z.string()),
-});
-
-const ExportSchema = z.object({
-  projectName: z.string(),
-  target: z.enum(['github', 'linear', 'jira', 'notion']),
-  options: z.record(z.string()).optional(),
 });
 
 const TOOLS: Tool[] = [
   {
     name: 'blueprint_generate',
-    description: 'Generate enterprise documentation from a project description. Creates PRD, architecture docs, task breakdowns, and more.',
+    description: 'Render model-neutral documentation workbooks. Returns a preview by default; set writeFiles=true for an explicit filesystem write.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -73,6 +68,7 @@ const TOOLS: Tool[] = [
         scope: { type: 'string', enum: ['mvp', 'standard', 'comprehensive'], default: 'standard' },
         audience: { type: 'string', enum: ['startup', 'business', 'enterprise'], default: 'business' },
         outputDir: { type: 'string', description: 'Output directory (optional)' },
+        writeFiles: { type: 'boolean', default: false, description: 'Explicitly write rendered workbooks to disk' },
         projectType: { type: 'string' },
         techStack: { type: 'array', items: { type: 'string' } },
       },
@@ -85,8 +81,8 @@ const TOOLS: Tool[] = [
     inputSchema: {
       type: 'object',
       properties: {
-        currentAnswers: { type: 'object', additionalProperties: { type: 'string' } },
-        questionIndex: { type: 'number', default: 0 },
+        answers: { type: 'object', additionalProperties: true, description: 'Answers supplied so far' },
+        action: { type: 'string', enum: ['start', 'answer', 'complete', 'analyze'], default: 'start' },
       },
     },
   },
@@ -109,28 +105,16 @@ const TOOLS: Tool[] = [
       properties: {
         templateId: { type: 'string' },
         projectName: { type: 'string' },
+        projectDescription: { type: 'string', default: '' },
         customFields: { type: 'object', additionalProperties: { type: 'string' } },
       },
       required: ['templateId', 'projectName', 'customFields'],
     },
   },
-  {
-    name: 'blueprint_export',
-    description: 'Export documentation to GitHub, Linear, Jira, or Notion.',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        projectName: { type: 'string' },
-        target: { type: 'string', enum: ['github', 'linear', 'jira', 'notion'] },
-        options: { type: 'object', additionalProperties: { type: 'string' } },
-      },
-      required: ['projectName', 'target'],
-    },
-  },
 ];
 
 const server = new Server(
-  { name: 'intent-blueprint', version: '2.8.0' },
+  { name: 'intent-blueprint', version: VERSION },
   { capabilities: { tools: {} } }
 );
 
@@ -139,7 +123,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: TOOLS }))
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
 
-  switch (name) {
+  try {
+    switch (name) {
     case 'blueprint_generate': {
       const input = GenerateSchema.parse(args);
       const context: TemplateContext = {
@@ -152,13 +137,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       };
 
       const docs = generateAllDocuments(context);
-      const outputDir = input.outputDir || `./docs/${input.projectName.toLowerCase().replace(/\s+/g, '-')}`;
-      const files = writeDocuments(docs, outputDir);
+      const outputDir = input.outputDir || `./docs/${input.projectName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+      const files = input.writeFiles ? writeDocuments(docs, outputDir) : [];
+      const preview = docs.slice(0, 3).map(doc => `## ${doc.name}\n\n${doc.content.slice(0, 900)}`).join('\n\n');
 
       return {
         content: [{
           type: 'text',
-          text: `Generated ${docs.length} documents for "${input.projectName}"\n\nOutput: ${outputDir}\n\nDocuments:\n${docs.map(d => `- ${d.name}`).join('\n')}`,
+          text: `${input.writeFiles ? 'Wrote' : 'Rendered'} ${docs.length} workbooks for "${input.projectName}"${input.writeFiles ? `\n\nOutput: ${outputDir}\nFiles: ${files.length}` : '\n\nNo files were written. Set writeFiles=true to persist them.'}\n\nDocuments:\n${docs.map(d => `- ${d.name}`).join('\n')}\n\nPreview:\n\n${preview}`,
         }],
       };
     }
@@ -251,7 +237,7 @@ To answer, call blueprint_interview with:
       const input = CustomizeSchema.parse(args);
       const context: TemplateContext = {
         projectName: input.projectName,
-        projectDescription: input.customFields.projectDescription || '',
+        projectDescription: input.projectDescription,
         scope: 'comprehensive',
         audience: 'business',
         ...input.customFields,
@@ -263,18 +249,17 @@ To answer, call blueprint_interview with:
       };
     }
 
-    case 'blueprint_export': {
-      const input = ExportSchema.parse(args);
-      return {
-        content: [{
-          type: 'text',
-          text: `Export to ${input.target} coming soon!\n\nFor now, use blueprint_generate to create local files.`,
-        }],
-      };
-    }
-
     default:
       throw new Error(`Unknown tool: ${name}`);
+    }
+  } catch (error) {
+    const message = error instanceof z.ZodError
+      ? error.issues.map(issue => `${issue.path.join('.') || 'input'}: ${issue.message}`).join('; ')
+      : error instanceof Error ? error.message : String(error);
+    return {
+      isError: true,
+      content: [{ type: 'text', text: `Blueprint request failed: ${message}` }],
+    };
   }
 });
 

@@ -33,7 +33,6 @@ jobs:
 
       - name: Run tests
         run: npm test
-        continue-on-error: true
 
       - name: Validate skills
         run: npm run test:skills

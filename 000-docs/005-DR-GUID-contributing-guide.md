@@ -93,5 +93,5 @@ We follow the [Contributor Covenant](https://www.contributor-covenant.org/). Be 
 
 ## Getting Help
 
-- **Issues**: https://github.com/intent-solutions-io/intent-blueprint-docs/issues
+- **Issues**: https://github.com/jeremylongshore/intent-blueprint-docs/issues
 - **Discussions**: Use GitHub Discussions for questions

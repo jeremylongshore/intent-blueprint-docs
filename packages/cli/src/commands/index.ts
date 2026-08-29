@@ -92,7 +92,7 @@ export async function routeCommand(args: string[]): Promise<void> {
 
   // Handle version
   if (command === '--version' || command === '-v') {
-    console.log('Intent Blueprint CLI v2.8.0');
+    console.log('Intent Blueprint CLI v2.9.0');
     return;
   }
 

@@ -23,20 +23,19 @@ jobs:
           # cache: 'npm'  # Disabled until package-lock.json is committed
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build all packages
         run: npm run build
 
       - name: Run tests
         run: npm test
-        continue-on-error: true
 
-      - name: Publish to npm
-        run: |
-          npm publish --workspace=@intentsolutions/blueprint-core --access public || true
-          npm publish --workspace=@intentsolutions/blueprint-mcp --access public || true
-          npm publish --workspace=@intentsolutions/blueprint --access public || true
+      - name: Verify templates and package mirror
+        run: npm run verify
+
+      - name: Publish CLI, library, and MCP binary
+        run: npm publish --workspace=@intentsolutions/blueprint --access public --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -57,13 +56,14 @@ jobs:
 
             ## MCP Server
 
-            Add to your Claude/Cursor config:
+            Add to any stdio MCP client:
             ```json
             {
               "mcpServers": {
                 "blueprint": {
+                  "type": "stdio",
                   "command": "npx",
-                  "args": ["@intentsolutions/blueprint-mcp"]
+                  "args": ["-y", "--package", "@intentsolutions/blueprint@2.9.0", "blueprint-mcp"]
                 }
               }
             }
