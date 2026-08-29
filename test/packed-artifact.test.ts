@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { spawnSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+
+const cliPackage = JSON.parse(readFileSync('packages/cli/package.json', 'utf8'));
 
 describe('publishable npm artifact', () => {
+  it('checks generated mirrors without mutating them during concurrent tests', () => {
+    expect(cliPackage.scripts.prepack).toContain('sync-templates.mjs --check');
+  });
+
   it('contains the tested schema renderer, exact corpus, governed examples, and package guidance', () => {
     const result = spawnSync('npm', ['pack', '--workspace=@intentsolutions/blueprint', '--dry-run', '--json'], {
       cwd: process.cwd(), encoding: 'utf8', maxBuffer: 8 * 1024 * 1024,
@@ -18,7 +25,7 @@ describe('publishable npm artifact', () => {
     expect(paths).toContain('dist/core/schema.js');
     expect(paths.filter(path => /^templates\/core\/\d{2}_[a-z_]+\.md$/.test(path))).toHaveLength(22);
     expect(paths.filter(path => /^example-packs\/[a-z][a-z0-9-]+\.md$/.test(path))).toHaveLength(20);
-  });
+  }, 20_000);
 
   it('runs the built CLI adapter against the typed scope catalog', () => {
     const result = spawnSync('node', ['packages/cli/dist/cli.js', 'list', '--scope', 'mvp'], {

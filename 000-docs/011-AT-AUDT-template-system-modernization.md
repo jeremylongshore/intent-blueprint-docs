@@ -1,6 +1,6 @@
 # Template System Audit and Model-Neutral Modernization
 
-**Status:** Implemented and release-ready for v3.0.0; publication receipt pending
+**Status:** Implemented for v3.0.0; publication is evidenced by the npm registry and GitHub release
 **Date:** 2026-08-28  
 **Scope:** 22 historical templates, deterministic generator, npm packaging, MCP contract, portable skill, and host adapters  
 **Beads epic:** `blueprint-yn2`

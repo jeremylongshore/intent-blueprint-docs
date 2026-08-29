@@ -30,7 +30,7 @@
   ],
   "scripts": {
     "build": "node ../../scripts/sync-templates.mjs && tsc",
-    "prepack": "node ../../scripts/sync-templates.mjs >/dev/null",
+    "prepack": "node ../../scripts/sync-templates.mjs --check >/dev/null",
     "dev": "tsc --watch",
     "clean": "rm -rf dist",
     "test": "vitest",
