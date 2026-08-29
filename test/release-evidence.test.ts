@@ -7,9 +7,9 @@ const receiptBuilder = readFileSync('scripts/create-release-receipt.mjs', 'utf8'
 const modernizationAudit = readFileSync('000-docs/011-AT-AUDT-template-system-modernization.md', 'utf8');
 
 describe('release evidence contract', () => {
-  it('records the modernization as implemented and release-ready before publication', () => {
-    expect(modernizationAudit).toContain('**Status:** Implemented and release-ready for v3.0.0; publication receipt pending');
-    expect(modernizationAudit).not.toMatch(/release verification pending/i);
+  it('records a timeless publication evidence contract', () => {
+    expect(modernizationAudit).toContain('**Status:** Implemented for v3.0.0; publication is evidenced by the npm registry and GitHub release');
+    expect(modernizationAudit).not.toMatch(/(?:publication receipt|release verification) pending/i);
   });
 
   it('tests and publishes the same packed artifact with provenance', () => {
