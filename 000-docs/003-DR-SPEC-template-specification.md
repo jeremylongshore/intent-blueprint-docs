@@ -42,13 +42,13 @@ Intent Blueprint Docs ships 22 professional document templates organized into 5 
 
 | Scope | Templates Included |
 |-------|-------------------|
-| **MVP** (4) | PRD, System Architecture, User Stories, Task Generation |
-| **Standard** (12) | MVP + Market Research, ADRs, Frontend Spec, User Journeys, Risk Register, Metrics, Test Plan, Release Plan |
+| **MVP** (4) | PRD, Task Generation, Project Brief, Brainstorming |
+| **Standard** (12) | MVP + ADRs, System Architecture, Personas, User Journeys, User Stories, Acceptance Criteria, Test Plan, Release Plan |
 | **Comprehensive** (22) | All templates |
 
 ## Template Format
 
-Each template is a Markdown file in `professional-templates/` with:
+Each template has a typed definition in `packages/cli/src/core/catalog.ts`. Default generation uses that definition and the shared schema/module registries. The historical Markdown file in `professional-templates/core/` remains a read-only compatibility source.
 
 ```markdown
 # [Template Title]
@@ -67,19 +67,22 @@ Each template is a Markdown file in `professional-templates/` with:
 | Placeholder | Replaced With |
 |-------------|--------------|
 | `{{DATE}}` | Current date (ISO 8601) |
-| `{{PROJECT_NAME}}` | User-provided project name |
-| `{{PROJECT_DESC}}` | User-provided description |
+| `{{PROJECT_NAME}}` | Reserved for schema-backed replacement templates; absent from the historical corpus |
+| `{{PROJECT_DESC}}` | Reserved for schema-backed replacement templates; absent from the historical corpus |
+
+Project name, description, audience, evidence, assumptions, unknowns, and provenance are rendered through the schema-backed generator. The legacy placeholder system is used only when a caller explicitly selects `generationMode: "legacy"`.
 
 ## Rules
 
 1. **Templates are READ-ONLY** - Never modify files in `professional-templates/`
 2. **Generated docs go to `completed-docs/`** - Separate from source templates
-3. **Placeholders are mandatory** - All templates must use `{{DATE}}` at minimum
-4. **Metadata is consistent** - Header format is standardized across all templates
+3. **Definitions are authoritative** - ID, filename, category, scope, sections, modules, and example packs come from the typed catalog
+4. **Examples are opt-in** - They are illustrative, excluded by default, and cannot satisfy evidence
+5. **Metadata is validated** - The shared Zod contract and generation receipt are mandatory on the default path
 
 ## Adding New Templates
 
-1. Create template in `professional-templates/` following the format above
-2. Add to scope tier mapping in the core engine
-3. Run `make verify` to validate template count and format
-4. Update this spec with the new template entry
+1. Add the typed definition and any reusable module or governed example pack.
+2. Preserve or explicitly migrate the public ID and filename.
+3. Add catalog, safe-default, migration, and package tests.
+4. Run `npm run verify` and update this specification.

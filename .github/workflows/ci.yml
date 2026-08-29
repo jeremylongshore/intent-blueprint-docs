@@ -18,6 +18,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -28,12 +30,24 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Verify pinned test policy and scan the change boundary
+        run: |
+          npx audit-harness verify
+          npx audit-harness escape-scan --range origin/main...HEAD
+
+      - name: Run portable conformance and testing-depth gates
+        run: |
+          npx audit-harness conform .
+          npx audit-harness audit .
+
+      - name: Check generated mirrors before build
+        run: npm run templates:check
+
       - name: Build all packages
         run: npm run build
 
       - name: Run tests
         run: npm test
-        continue-on-error: true
 
       - name: Validate skills
         run: npm run test:skills
@@ -45,6 +59,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -54,6 +70,12 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Verify pinned test policy
+        run: npx audit-harness verify
+
+      - name: Lint source and tests
+        run: npm run lint
 
       - name: Type check
         run: npm run build

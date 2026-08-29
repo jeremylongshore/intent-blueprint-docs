@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "blueprint-docs": {
+      "command": "npx",
+      "args": ["-y", "--package", "@intentsolutions/blueprint@3.0.0", "blueprint-mcp"]
+    }
+  }
+}

@@ -19,18 +19,23 @@ The Blueprint plugin system allows extending document generation with custom for
 ### Basic Structure
 
 ```typescript
-import { BlueprintPlugin } from '@intentsolutions/blueprint-core';
+import type { FormatterPlugin } from '@intentsolutions/blueprint/plugins';
 
-const myPlugin: BlueprintPlugin = {
-  name: 'my-custom-plugin',
-  version: '1.0.0',
-  type: 'formatter',
+const myPlugin: FormatterPlugin = {
+  meta: {
+    id: 'my-custom-plugin',
+    name: 'My Custom Plugin',
+    description: 'Example output formatter',
+    version: '1.0.0',
+    author: { name: 'Example Team' },
+    type: 'formatter'
+  },
 
-  // Called during document generation
-  async process(content: string, options: PluginOptions): Promise<PluginResult> {
-    const transformed = transformContent(content);
-    return { content: transformed, format: 'custom' };
-  }
+  async format(content: string): Promise<string> {
+    return transformContent(content);
+  },
+  getExtension: () => '.custom',
+  getMimeType: () => 'text/plain'
 };
 
 export default myPlugin;
@@ -39,7 +44,7 @@ export default myPlugin;
 ### Registration
 
 ```typescript
-import { createPluginManager } from '@intentsolutions/blueprint-core';
+import { createPluginManager } from '@intentsolutions/blueprint/plugins';
 
 const manager = createPluginManager();
 manager.register(myPlugin);

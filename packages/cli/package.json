@@ -1,7 +1,7 @@
 {
   "name": "@intentsolutions/blueprint",
-  "version": "2.8.0",
-  "description": "Enterprise AI documentation generator - CLI, MCP Server, REST API, and multi-model support",
+  "version": "3.0.0",
+  "description": "Model-neutral documentation workbooks with CLI and MCP interfaces",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -13,6 +13,10 @@
     "./mcp": {
       "types": "./dist/mcp/index.d.ts",
       "import": "./dist/mcp/index.js"
+    },
+    "./plugins": {
+      "types": "./dist/plugins/index.d.ts",
+      "import": "./dist/plugins/index.js"
     }
   },
   "bin": {
@@ -21,10 +25,12 @@
   },
   "files": [
     "dist",
-    "templates"
+    "templates",
+    "example-packs"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "node ../../scripts/sync-templates.mjs && tsc",
+    "prepack": "node ../../scripts/sync-templates.mjs >/dev/null",
     "dev": "tsc --watch",
     "clean": "rm -rf dist",
     "test": "vitest",
@@ -38,14 +44,14 @@
     "prd-generator",
     "ai-documentation",
     "enterprise-templates",
-    "claude",
-    "cursor"
+    "agent-skills",
+    "model-agnostic"
   ],
   "author": "Jeremy Longshore <jeremy@intentsolutions.io>",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/intent-solutions-io/intent-blueprint-docs.git",
+    "url": "git+https://github.com/jeremylongshore/intent-blueprint-docs.git",
     "directory": "packages/cli"
   },
   "dependencies": {
@@ -68,6 +74,6 @@
     "vitest": "^4.0.0"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   }
 }

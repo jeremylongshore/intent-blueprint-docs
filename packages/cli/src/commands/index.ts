@@ -8,6 +8,7 @@ export * from './analytics.js';
 
 import { handleMarketplaceCommand } from './marketplace.js';
 import { handleAnalyticsCommand } from './analytics.js';
+import { VERSION } from '../version.js';
 
 /**
  * Command registry
@@ -92,7 +93,7 @@ export async function routeCommand(args: string[]): Promise<void> {
 
   // Handle version
   if (command === '--version' || command === '-v') {
-    console.log('Intent Blueprint CLI v2.8.0');
+    console.log(`Intent Blueprint CLI v${VERSION}`);
     return;
   }
 

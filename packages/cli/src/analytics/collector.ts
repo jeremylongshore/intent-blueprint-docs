@@ -14,6 +14,7 @@ import type {
   SessionStats,
 } from './types.js';
 import { DEFAULT_ANALYTICS_CONFIG } from './types.js';
+import { VERSION } from '../version.js';
 
 /**
  * Analytics Collector
@@ -41,7 +42,7 @@ export class AnalyticsCollector {
       version: '1.0.0',
       platform: process.platform,
       nodeVersion: process.version,
-      cliVersion: '2.8.0', // Should be read from package.json
+      cliVersion: VERSION,
       environment: process.env.NODE_ENV,
     };
   }

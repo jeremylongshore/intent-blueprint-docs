@@ -5,6 +5,8 @@
  * @packageDocumentation
  */
 
+export { VERSION } from './version.js';
+
 // Core exports for programmatic use
 export {
   listTemplates,
@@ -21,6 +23,41 @@ export {
   type GeneratedDocument,
   type TemplateInfo,
 } from './core/index.js';
+
+export {
+  EVIDENCE_STATES,
+  RECORD_PREFIXES,
+  LIFECYCLE_EDGE_RULES,
+  RecordIdSchema,
+  EvidenceItemSchema,
+  HumanReviewSchema,
+  DocumentMetadataSchema,
+  TemplateSectionSchema,
+  TemplateDefinitionSchema,
+  TraceNodeSchema,
+  TraceEdgeSchema,
+  TraceGraphSchema,
+  GenerationReceiptSchema,
+  type EvidenceState,
+  type EvidenceItem,
+  type DocumentMetadata,
+  type TemplateDefinition,
+  type TraceNode,
+  type TraceEdge,
+  type TraceGraph,
+  type GenerationReceiptV1,
+} from './core/schema.js';
+
+export {
+  TEMPLATE_DEFINITIONS,
+  TEMPLATE_BY_ID,
+  LEGACY_TEMPLATE_MIGRATIONS,
+  validateTemplateCatalog,
+} from './core/catalog.js';
+
+export { BLUEPRINT_MODULES, BLUEPRINT_MODULE_BY_ID, type BlueprintModule } from './core/modules.js';
+export { EXAMPLE_PACKS, EXAMPLE_PACK_BY_ID, type ExamplePackDefinition } from './core/examples.js';
+export { renderSchemaBlueprint, type SchemaRenderContext, type RenderedBlueprint } from './core/renderer.js';
 
 // Interview engine exports
 export {
@@ -49,7 +86,7 @@ export {
 } from './interview/index.js';
 
 // MCP server export
-export { startMcpServer } from './mcp/index.js';
+export { createMcpServer, startMcpServer } from './mcp/index.js';
 
 // GitHub integration exports
 export {

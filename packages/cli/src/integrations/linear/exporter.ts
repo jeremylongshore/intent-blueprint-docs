@@ -440,7 +440,7 @@ export class LinearExporter {
       .replace(/\[(urgent|high|medium|low)\]/gi, '')
       .replace(/\[\d+(h|d|pt|w)\]/gi, '')
       .replace(/\[(feature|bug|tech-debt|research|design|devops|security|testing|documentation)\]/gi, '')
-      .replace(/[🔴🟠🟡🟢]/g, '')
+      .replace(/[🔴🟠🟡🟢]/gu, '')
       .trim();
   }
 

@@ -69,3 +69,8 @@ completed-docs/
 # Archive directory
 archive/
 .turbo
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+.beads-credential-key
+.beads/proxieddb/

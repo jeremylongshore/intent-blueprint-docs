@@ -4,10 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## System Overview
 
-**Intent Blueprint Docs** is an enterprise-grade AI documentation generator that creates 22 professional documents from project ideas. It provides dual AI assistant integration (Claude Code CLI and Cursor IDE) with guided prompts for users of all skill levels.
+**Intent Blueprint Docs** is a model-neutral documentation system. The canonical portable Agent Skill guides evidence-backed authoring; the deterministic core, CLI, MCP server, and host adapters render and review a selectable 22-workbook lifecycle corpus.
 
-**Release:** v2.9.0 - Enterprise Documentation Pipeline with gstack-adapted skills
-**Template Count:** 22 verified templates with {{DATE}} placeholders
+**Release:** v3.0.0 - Schema-backed Blueprint workbooks
+**Template Count:** 22 canonical historical templates plus a generated package mirror
 
 ## Task Tracking (Beads)
 
@@ -54,6 +54,8 @@ npm run test:evals              # LLM-judge evaluation (requires ANTHROPIC_API_K
 ├── 05-Scripts/                 # Automation (export.js, verify-templates.sh, run-enterprise.mjs)
 ├── 99-Archive/                 # Archived items
 ├── professional-templates/     # 22 master templates (READ-ONLY)
+├── skills/blueprint-docs/      # Canonical model-neutral Agent Skill
+├── agents/                     # Focused Claude compatibility agents
 ├── form-system/                # Interactive CLI tools
 ├── commands/                   # Slash commands (new-project.md, .md.tmpl sources)
 │   └── shared/                 # Shared template blocks (preamble.md, template-list.md)
@@ -117,7 +119,7 @@ Follow steps 2-4 in `.cursorrules/` for structured workflow.
 ## Architecture Notes
 
 - **22 templates** in `professional-templates/` with `{{DATE}}` placeholders for dynamic date insertion
-- **Dual AI support** - Claude Code CLI (free-form) and Cursor IDE (structured)
+- **Model-neutral host support** - Portable Agent Skill plus thin Claude Code, Codex, Cursor, Gemini, CLI, and MCP adapters
 - **Enterprise E2E** validated via GitHub Actions
 - **Node.js required** for form-system and enterprise scripts
 - **Monorepo** with workspaces in `packages/` (cli, chatbots)

@@ -10,14 +10,17 @@ import fs from 'fs';
 import path from 'path';
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
-const SKILLS_DIR = path.join(PROJECT_ROOT, '.claude', 'skills');
+const SKILLS_DIRS = [
+  path.join(PROJECT_ROOT, 'skills'),
+  path.join(PROJECT_ROOT, '.claude', 'skills'),
+];
 const COMMANDS_DIR = path.join(PROJECT_ROOT, 'commands');
 
-function getSkillDirs(): string[] {
-  if (!fs.existsSync(SKILLS_DIR)) return [];
-  return fs.readdirSync(SKILLS_DIR, { withFileTypes: true })
-    .filter(d => d.isDirectory())
-    .map(d => d.name);
+function getSkillDirs(): Array<{ name: string; root: string }> {
+  return SKILLS_DIRS.flatMap(root => !fs.existsSync(root) ? [] :
+    fs.readdirSync(root, { withFileTypes: true })
+      .filter(d => d.isDirectory())
+      .map(d => ({ name: d.name, root })));
 }
 
 function getTemplateFiles(): string[] {
@@ -41,9 +44,9 @@ describe('Skill validation', () => {
     expect(skillDirs.length).toBeGreaterThan(0);
   });
 
-  for (const skillName of skillDirs) {
-    describe(`skill: ${skillName}`, () => {
-      const skillPath = path.join(SKILLS_DIR, skillName, 'SKILL.md');
+  for (const skill of skillDirs) {
+    describe(`skill: ${skill.name}`, () => {
+      const skillPath = path.join(skill.root, skill.name, 'SKILL.md');
 
       it('has SKILL.md', () => {
         expect(fs.existsSync(skillPath)).toBe(true);
@@ -71,7 +74,7 @@ describe('Skill validation', () => {
         const content = fs.readFileSync(skillPath, 'utf8');
         const nameMatch = content.match(/^name:\s+(.+)$/m);
         expect(nameMatch).not.toBeNull();
-        expect(nameMatch![1].trim()).toBe(skillName);
+        expect(nameMatch![1].trim()).toBe(skill.name);
       });
 
       it('is under 500 lines', () => {
