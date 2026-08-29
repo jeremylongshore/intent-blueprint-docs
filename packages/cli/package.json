@@ -1,6 +1,6 @@
 {
   "name": "@intentsolutions/blueprint",
-  "version": "2.9.0",
+  "version": "3.0.0",
   "description": "Model-neutral documentation workbooks with CLI and MCP interfaces",
   "type": "module",
   "main": "dist/index.js",
@@ -25,11 +25,12 @@
   },
   "files": [
     "dist",
-    "templates"
+    "templates",
+    "example-packs"
   ],
   "scripts": {
     "build": "node ../../scripts/sync-templates.mjs && tsc",
-    "prepack": "node ../../scripts/sync-templates.mjs",
+    "prepack": "node ../../scripts/sync-templates.mjs >/dev/null",
     "dev": "tsc --watch",
     "clean": "rm -rf dist",
     "test": "vitest",

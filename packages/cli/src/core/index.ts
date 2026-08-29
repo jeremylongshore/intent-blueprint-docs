@@ -4,9 +4,19 @@
  */
 
 import Handlebars from 'handlebars';
-import { readFileSync, readdirSync, existsSync, mkdirSync, writeFileSync } from 'fs';
+import { readFileSync, existsSync, mkdirSync, writeFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { TEMPLATE_DEFINITIONS, validateTemplateCatalog } from './catalog.js';
+import { renderSchemaBlueprint } from './renderer.js';
+import type { DocumentMetadata, GenerationReceiptV1 } from './schema.js';
+import type { EvidenceItem, TraceGraph } from './schema.js';
+
+export * from './schema.js';
+export * from './catalog.js';
+export * from './modules.js';
+export * from './examples.js';
+export * from './renderer.js';
 
 // Types
 export interface TemplateContext {
@@ -23,10 +33,14 @@ export interface TemplateContext {
   owner?: string;
   reviewers?: string[];
   status?: 'draft' | 'in-review' | 'approved';
-  evidence?: string[];
+  evidence?: Array<string | EvidenceItem>;
   assumptions?: string[];
   unknowns?: string[];
   sourceRefs?: string[];
+  sourceHashes?: Record<string, string>;
+  traceGraph?: TraceGraph;
+  includeExamplePacks?: string[];
+  generationMode?: 'schema' | 'legacy';
   [key: string]: unknown;
 }
 
@@ -35,6 +49,8 @@ export interface GeneratedDocument {
   filename: string;
   content: string;
   category: string;
+  metadata?: DocumentMetadata;
+  receipt?: GenerationReceiptV1;
 }
 
 export interface TemplateInfo {
@@ -44,35 +60,6 @@ export interface TemplateInfo {
   category: string;
   description: string;
 }
-
-export interface GenerationReceipt {
-  schemaVersion: '1.0';
-  templateId: string;
-  templateVersion: string;
-  generatedAt: string;
-  generator: string;
-  sourceRefs: string[];
-}
-
-// Template categories
-const TEMPLATE_CATEGORIES: Record<string, string[]> = {
-  'Product & Strategy': ['01_prd.md', '05_market_research.md', '07_competitor_analysis.md', '08_personas.md', '14_project_brief.md'],
-  'Technical Architecture': ['02_adr.md', '06_architecture.md', '16_frontend_spec.md', '19_operational_readiness.md'],
-  'User Experience': ['09_user_journeys.md', '10_user_stories.md', '11_acceptance_criteria.md'],
-  'Development Workflow': ['03_generate_tasks.md', '04_process_task_list.md', '13_risk_register.md', '15_brainstorming.md', '20_metrics_dashboard.md'],
-  'Quality Assurance': ['17_test_plan.md', '12_qa_gate.md', '18_release_plan.md', '21_postmortem.md', '22_playtest_usability.md']
-};
-
-// Scope mappings
-const SCOPE_TEMPLATES: Record<string, string[]> = {
-  mvp: ['01_prd.md', '03_generate_tasks.md', '14_project_brief.md', '15_brainstorming.md'],
-  standard: [
-    '01_prd.md', '02_adr.md', '03_generate_tasks.md', '06_architecture.md',
-    '08_personas.md', '09_user_journeys.md', '10_user_stories.md', '11_acceptance_criteria.md',
-    '14_project_brief.md', '15_brainstorming.md', '17_test_plan.md', '18_release_plan.md'
-  ],
-  comprehensive: Object.values(TEMPLATE_CATEGORIES).flat()
-};
 
 /**
  * Get the templates directory path
@@ -101,24 +88,10 @@ export function getTemplatesDir(): string {
  * List all available templates
  */
 export function listTemplates(): TemplateInfo[] {
-  const templatesDir = getTemplatesDir();
-  const files = readdirSync(templatesDir).filter(f => f.endsWith('.md'));
-
-  return files.map(filename => {
-    const id = filename.replace('.md', '');
-    const name = id.replace(/^\d+_/, '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-    const category = Object.entries(TEMPLATE_CATEGORIES).find(([, templates]) =>
-      templates.includes(filename)
-    )?.[0] || 'Other';
-
-    return {
-      id,
-      name,
-      filename,
-      category,
-      description: `Generate ${name} documentation`
-    };
-  });
+  validateTemplateCatalog(getTemplatesDir());
+  return TEMPLATE_DEFINITIONS.map(({ id, name, filename, category, description }) => ({
+    id, name, filename, category, description,
+  }));
 }
 
 function resolveTemplate(templateName: string): TemplateInfo {
@@ -132,77 +105,12 @@ function resolveTemplate(templateName: string): TemplateInfo {
   return template;
 }
 
-function yamlList(values: string[] | undefined): string {
-  if (!values?.length) return '  []';
-  return values.map(value => `  - ${JSON.stringify(value)}`).join('\n');
-}
-
-function renderContextEnvelope(
-  template: TemplateInfo,
-  context: TemplateContext,
-): { markdown: string; receipt: GenerationReceipt } {
-  const generatedAt = context.generatedAt || new Date().toISOString();
-  const receipt: GenerationReceipt = {
-    schemaVersion: '1.0',
-    templateId: template.id,
-    templateVersion: '2.9.0-legacy',
-    generatedAt,
-    generator: '@intentsolutions/blueprint',
-    sourceRefs: context.sourceRefs || [],
-  };
-  const markdown = `---
-blueprint:
-  schema_version: "${receipt.schemaVersion}"
-  template_id: ${JSON.stringify(receipt.templateId)}
-  template_version: ${JSON.stringify(receipt.templateVersion)}
-  generated_at: ${JSON.stringify(receipt.generatedAt)}
-  generator: ${JSON.stringify(receipt.generator)}
-  status: ${JSON.stringify(context.status || 'draft')}
-  project: ${JSON.stringify(context.projectName)}
-  audience: ${JSON.stringify(context.audience)}
-  owner: ${JSON.stringify(context.owner || '')}
-  reviewers:
-${yamlList(context.reviewers)}
-  source_refs:
-${yamlList(context.sourceRefs)}
----
-
-> [!IMPORTANT]
-> This is a deterministic Blueprint workbook, not a claim that an AI completed the project analysis. Replace illustrative legacy examples with verified project evidence before approval.
-
-## Project context
-
-- **Project:** ${context.projectName}
-- **Description:** ${context.projectDescription}
-- **Scope:** ${context.scope}
-- **Audience:** ${context.audience}
-- **Project type:** ${context.projectType || 'Unknown'}
-- **Technology constraints:** ${context.techStack?.join(', ') || 'Unknown'}
-
-### Evidence supplied
-
-${context.evidence?.length ? context.evidence.map(item => `- ${item}`).join('\n') : '- None supplied.'}
-
-### Assumptions requiring validation
-
-${context.assumptions?.length ? context.assumptions.map(item => `- ${item}`).join('\n') : '- None recorded.'}
-
-### Known unknowns
-
-${context.unknowns?.length ? context.unknowns.map(item => `- ${item}`).join('\n') : '- None recorded.'}
-
----
-`;
-
-  return { markdown, receipt };
-}
-
 /**
  * Get templates for a specific scope
  */
 export function getTemplatesForScope(scope: 'mvp' | 'standard' | 'comprehensive'): TemplateInfo[] {
-  const scopeTemplates = SCOPE_TEMPLATES[scope];
-  return listTemplates().filter(t => scopeTemplates.includes(t.filename));
+  const allowed = new Set(TEMPLATE_DEFINITIONS.filter(item => item.scopes.includes(scope)).map(item => item.id));
+  return listTemplates().filter(item => allowed.has(item.id));
 }
 
 /**
@@ -228,19 +136,29 @@ export function compileTemplate(templateName: string, generatedAt?: string): Han
  */
 export function generateDocument(templateName: string, context: TemplateContext): GeneratedDocument {
   const info = resolveTemplate(templateName);
-  const template = compileTemplate(info.filename, context.generatedAt);
-  const rendered = template(context);
-  const { markdown } = renderContextEnvelope(info, context);
   const safeProjectName = context.projectName
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '') || 'project';
 
+  if (context.generationMode === 'legacy') {
+    const template = compileTemplate(info.filename, context.generatedAt);
+    return {
+      name: info.name,
+      filename: `${safeProjectName}-${info.filename}`,
+      content: `> [!WARNING]\n> Legacy compatibility output. It may contain illustrative defaults and cannot be approved without migration and evidence review.\n\n${template(context)}`,
+      category: info.category,
+    };
+  }
+
+  const rendered = renderSchemaBlueprint(info.id, context);
   return {
     name: info.name,
-    filename: `${safeProjectName}-${info.filename}`,
-    content: `${markdown}\n${rendered}`,
-    category: info.category
+    filename: rendered.receipt.output.filename,
+    content: rendered.content,
+    category: info.category,
+    metadata: rendered.metadata,
+    receipt: rendered.receipt,
   };
 }
 

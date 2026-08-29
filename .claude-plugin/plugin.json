@@ -1,6 +1,6 @@
 {
   "name": "blueprint-docs",
-  "version": "2.9.0",
+  "version": "3.0.0",
   "description": "Model-neutral documentation workflows with a Claude Code compatibility adapter",
   "author": { "name": "Intent Solutions", "email": "jeremy@intentsolutions.io" },
   "homepage": "https://github.com/jeremylongshore/intent-blueprint-docs",

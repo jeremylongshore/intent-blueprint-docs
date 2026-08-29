@@ -8,6 +8,7 @@ import { Command } from 'commander';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
 import ora from 'ora';
+import { VERSION } from './version.js';
 import {
   listTemplates,
   generateAllDocuments,
@@ -23,7 +24,7 @@ const program = new Command();
 program
   .name('blueprint')
   .description('Intent Blueprint - Enterprise AI Documentation Generator')
-  .version('2.9.0');
+  .version(VERSION);
 
 // Init command
 program

@@ -1,6 +1,6 @@
 # Template System Audit and Model-Neutral Modernization
 
-**Status:** Approved implementation basis  
+**Status:** Implemented and release-ready for v3.0.0; publication receipt pending
 **Date:** 2026-08-28  
 **Scope:** 22 historical templates, deterministic generator, npm packaging, MCP contract, portable skill, and host adapters  
 **Beads epic:** `blueprint-yn2`
@@ -35,6 +35,8 @@ The host model performs evidence-backed authoring. The core selects and renders 
 
 ## Per-template disposition
 
+All 22 rows below are implemented as typed version `3.0.0` definitions. Public IDs and filenames are unchanged. Default generation uses concise schema-backed sections; the historical body is reachable only through explicit legacy mode. Shared material lives in governed module registries, and example material is opt-in and cannot satisfy evidence.
+
 | # | Document | Disposition | Highest-priority correction |
 |---:|---|---|---|
 | 01 | PRD | Keep; substantially revise | Stable requirement IDs, applicability, sources, confidence, verification, and trace links; remove default targets and compliance assumptions. |
@@ -62,7 +64,7 @@ The host model performs evidence-backed authoring. The core selects and renders 
 
 ## Shared schema and traceability
 
-Every new document receives: `document_id`, `document_type`, `schema_version`, `template_version`, `status`, `owner`, `authors`, `reviewers`, `approvers`, `generated_at`, `updated_at`, `classification`, `source_refs`, `source_hashes`, `assumptions`, `unknowns`, `human_review`, `related_artifacts`, `review_due`, and `supersedes`. Receipts may record neutral provider/model/tool identifiers but must not expose secrets, personal data, or private prompts.
+Every new document receives: `documentId`, `documentType`, `schemaVersion`, `templateVersion`, `status`, `owner`, `authors`, `reviewers`, `approvers`, `generatedAt`, `updatedAt`, `classification`, `sourceRefs`, `sourceHashes`, `assumptions`, `unknowns`, `humanReview`, `relatedArtifacts`, `reviewDue`, and `supersedes`. Receipts may record neutral provider/model/tool identifiers but must not expose secrets, personal data, or private prompts.
 
 Material records use stable prefixes: `OBJ-`, `REQ-`, `RISK-`, `ADR-`, `STORY-`, `AC-`, `TASK-`, `TEST-`, `CTRL-`, `REL-`, `INC-`, and `ACT-`. Validation should progressively cover `objective → requirement → decision/component → story → criterion → task → test/evidence → release → metric/risk`.
 
@@ -79,6 +81,15 @@ These are alignment references. Formal conformance requires reviewing the comple
 3. **One source and typed generation:** generate the package mirror; add shared metadata, evidence states, controlled rendering, receipts, and traceability validation.
 4. **Modular replacements:** replace the highest-risk prefilled templates first; split templates from examples and consolidate governed modules.
 5. **Release evidence:** add protocol and smoke-install tests, verify manifests, generate SBOM/provenance, and enforce one runtime version source.
+
+## Compatibility and migration notes
+
+- `LEGACY_TEMPLATE_MIGRATIONS` is the machine-readable one-to-one map for all 22 historical IDs and filenames.
+- Compatibility migration preserves catalog references; it does not claim to transform free-form legacy document bodies into verified facts.
+- `generateDocument(id, context)` and `generateDocument(filename, context)` both select the schema-backed renderer.
+- `generationMode: "legacy"` is an explicit compatibility escape hatch and adds a prominent warning; legacy output does not receive a schema receipt.
+- MVP and Standard scope membership preserves the pre-migration runtime behavior documented in `000-docs/003-DR-SPEC-template-specification.md`.
+- The exact catalog, unique document types, module references, example-pack references, safe rendering, and compatibility paths are regression tested.
 
 ## Acceptance boundary
 

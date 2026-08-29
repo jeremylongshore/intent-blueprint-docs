@@ -20,8 +20,9 @@ describe('provider-neutral core generation', () => {
     expect(document.content).toContain('Atlas Evidence Hub');
     expect(document.content).toContain(context.projectDescription);
     expect(document.content).toContain('RFC-42');
-    expect(document.content).toContain('deterministic Blueprint workbook');
-    expect(document.content).toContain('generated_at: "2026-08-28T12:00:00.000Z"');
+    expect(document.content).toContain('Draft for human review');
+    expect(document.content).toContain("generatedAt: '2026-08-28T12:00:00.000Z'");
+    expect(document.receipt?.templateVersion).toBe('3.0.0');
   });
 
   it('only accepts catalog template IDs', () => {

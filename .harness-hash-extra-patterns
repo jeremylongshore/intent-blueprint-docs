@@ -1,0 +1,3 @@
+# Repository-specific engineer-owned policy surface.
+.harness-hash-extra-patterns
+tests/TESTING.md

@@ -12,6 +12,8 @@ import {
   Tool,
 } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
+import { realpathSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import {
   listTemplates,
   generateDocument,
@@ -24,13 +26,12 @@ import {
   InterviewEngine,
   type InterviewAnswers,
 } from '../interview/index.js';
-
-const VERSION = '2.9.0';
+import { VERSION } from '../version.js';
 
 // Tool schemas
 const GenerateSchema = z.object({
-  projectName: z.string().describe('Name of the project'),
-  projectDescription: z.string().describe('Brief description of what the project does'),
+  projectName: z.string().min(1).describe('Name of the project'),
+  projectDescription: z.string().min(1).describe('Brief description of what the project does'),
   scope: z.enum(['mvp', 'standard', 'comprehensive']).default('standard'),
   audience: z.enum(['startup', 'business', 'enterprise']).default('business'),
   outputDir: z.string().optional(),
@@ -51,8 +52,8 @@ const ListTemplatesSchema = z.object({
 
 const CustomizeSchema = z.object({
   templateId: z.string(),
-  projectName: z.string(),
-  projectDescription: z.string().default(''),
+  projectName: z.string().min(1),
+  projectDescription: z.string().min(1),
   customFields: z.record(z.string()),
 });
 
@@ -63,8 +64,8 @@ const TOOLS: Tool[] = [
     inputSchema: {
       type: 'object',
       properties: {
-        projectName: { type: 'string', description: 'Name of the project' },
-        projectDescription: { type: 'string', description: 'Brief description' },
+        projectName: { type: 'string', minLength: 1, description: 'Name of the project' },
+        projectDescription: { type: 'string', minLength: 1, description: 'Brief description' },
         scope: { type: 'string', enum: ['mvp', 'standard', 'comprehensive'], default: 'standard' },
         audience: { type: 'string', enum: ['startup', 'business', 'enterprise'], default: 'business' },
         outputDir: { type: 'string', description: 'Output directory (optional)' },
@@ -104,19 +105,20 @@ const TOOLS: Tool[] = [
       type: 'object',
       properties: {
         templateId: { type: 'string' },
-        projectName: { type: 'string' },
-        projectDescription: { type: 'string', default: '' },
+        projectName: { type: 'string', minLength: 1 },
+        projectDescription: { type: 'string', minLength: 1 },
         customFields: { type: 'object', additionalProperties: { type: 'string' } },
       },
-      required: ['templateId', 'projectName', 'customFields'],
+      required: ['templateId', 'projectName', 'projectDescription', 'customFields'],
     },
   },
 ];
 
-const server = new Server(
-  { name: 'intent-blueprint', version: VERSION },
-  { capabilities: { tools: {} } }
-);
+export function createMcpServer(): Server {
+  const server = new Server(
+    { name: 'intent-blueprint', version: VERSION },
+    { capabilities: { tools: {} } }
+  );
 
 server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: TOOLS }));
 
@@ -263,13 +265,18 @@ To answer, call blueprint_interview with:
   }
 });
 
+  return server;
+}
+
 export async function startMcpServer() {
+  const server = createMcpServer();
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error('Intent Blueprint MCP Server running...');
 }
 
 // Run if called directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+const invokedPath = process.argv[1] ? realpathSync(process.argv[1]) : '';
+if (fileURLToPath(import.meta.url) === invokedPath) {
   startMcpServer().catch(console.error);
 }

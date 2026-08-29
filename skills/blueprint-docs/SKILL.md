@@ -4,7 +4,7 @@ description: Create, modernize, or review evidence-backed product and engineerin
 license: Apache-2.0
 metadata:
   author: Intent Solutions
-  version: "2.9.0"
+  version: "3.0.0"
 ---
 
 # Blueprint Docs

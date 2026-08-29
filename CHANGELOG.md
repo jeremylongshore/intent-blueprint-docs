@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-08-29
+
+### Changed
+
+- Default generation now uses concise schema-backed workbooks for all 22 public template IDs.
+- Evidence states, provenance, trace graphs, shared modules, and human-review boundaries are runtime validated.
+- Historical workbook bodies remain available only through explicit legacy compatibility mode.
+- The CLI, library, MCP server, Claude, Codex, Cursor, and Gemini adapters share the 3.0.0 release identity.
+
+### Added
+
+- Governed opt-in example packs that cannot satisfy project evidence.
+- Deterministic generation receipts, packed-consumer CLI/MCP protocol smoke tests, CycloneDX SBOM, checksums, build attestations, and release receipts.
+- Current audit-harness policy pinning, conformance, and change-boundary enforcement.
+
 ## [2.9.0] - 2026-03-18
 
 ### Added

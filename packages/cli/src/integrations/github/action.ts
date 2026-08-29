@@ -96,7 +96,7 @@ ${config.createIssues ? `
         run: |
           npx @intentsolutions/blueprint export github \\
             --project "${config.projectName}" \\
-            --token "\$GITHUB_TOKEN" \\
+            --token "$GITHUB_TOKEN" \\
             --owner "\${{ github.repository_owner }}" \\
             --repo "\${{ github.event.repository.name }}"
 ` : ''}`;

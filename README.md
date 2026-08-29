@@ -1,38 +1,51 @@
 # Intent Blueprint Docs
 
-Model-neutral workflows and deterministic workbooks for product and engineering documentation.
+**Turn a rough idea into a clear project plan your team can use.**
 
-Blueprint Docs helps a capable coding agent or human team create evidence-backed PRDs, architecture descriptions, ADRs, risks, stories, tests, releases, operational reviews, and postmortems. The portable Agent Skill is canonical; MCP, CLI, Claude Code, Codex, Cursor, and Gemini integrations are thin adapters.
+For founders, product owners, agencies, and engineering teams. Blueprint asks questions, then creates a project brief, requirements, tasks, risks, and launch checklist. No documentation jargon needed.
 
-> Blueprint’s renderer creates structured workbooks. It does not independently research a project or turn sample content into verified facts. Agent-assisted drafts require source review and accountable human approval.
+## Start in 30 seconds — no install
 
-## What is implemented
+Open this repository in your AI coding assistant and paste:
 
-| Surface | Status | Artifact |
-|---|---|---|
-| Portable agent workflow | Implemented | `skills/blueprint-docs/SKILL.md` |
-| Historical 22-workbook corpus | Implemented; modernization in progress | `professional-templates/core/` |
-| Project/provenance envelope | Implemented | `@intentsolutions/blueprint` core |
-| CLI and library | Implemented | `@intentsolutions/blueprint` |
-| MCP list, interview, preview, and explicit write | Implemented | `blueprint-mcp` binary in the same package |
-| Claude Code adapter and review agents | Implemented | `.claude-plugin/`, `agents/` |
-| Codex plugin metadata | Implemented | `.codex-plugin/` |
-| Cursor and Gemini adapters | Implemented | `.cursor/`, `gemini-extension.json`, `GEMINI.md` |
-| GitHub, Linear, Jira, and Notion exporters | Library/CLI modules exist; not exposed as MCP tools | `packages/cli/src/integrations/` |
-| Fully schema-backed replacements for all legacy templates | Planned migration | `000-docs/011-AT-AUDT-template-system-modernization.md` |
+```text
+Use the blueprint-docs skill in this repository to plan [describe your idea].
+Ask me one question at a time. Label assumptions. Show the plan before creating files.
+```
 
-## Use the portable skill
+You get a draft for review with evidence, assumptions, and unknowns marked. Samples and AI guesses never become approved facts.
 
-Copy or install `skills/blueprint-docs/` into any harness that supports the [Agent Skills specification](https://agentskills.io/specification), then ask it to use `$blueprint-docs`.
+Example: “a booking site for my mobile dog-grooming business” becomes a ready-to-review plan—not 22 unnecessary files.
 
-The skill selects the smallest useful document set, builds an evidence register, assigns stable record IDs, connects lifecycle traceability, and keeps assumptions and unknowns visible.
+## Choose another way to use it
+
+| If you are… | Use this path |
+|---|---|
+| Working in Claude Code, Codex, Cursor, or Gemini CLI | Open the repository and use the starter prompt above. |
+| Adding Blueprint to another compatible AI tool | Install the portable skill from `skills/blueprint-docs/`. |
+| A developer or automation engineer | Use the command-line or MCP setup below. |
+
+## What is included
+
+- One guided workflow that works without choosing a specific AI model.
+- 22 project-document types covering planning, design, delivery, testing, launch, and operations.
+- Review agents that find unsupported claims and missing links between decisions, requirements, tests, and releases.
+- A command-line tool and MCP server for repeatable automation.
+
+The 22 historical workbooks now generate shorter, schema-backed drafts by default. Historical bodies remain available only through the explicit `generationMode: "legacy"` compatibility option and carry a prominent review warning.
+
+## Install the portable skill
+
+Copy or install `skills/blueprint-docs/` into any tool that supports the [Agent Skills specification](https://agentskills.io/specification), then ask it to use `$blueprint-docs`.
+
+The skill selects the smallest useful document set, builds an evidence register, connects related decisions and tests, and keeps assumptions and unknowns visible.
 
 ## CLI
 
 Requirements: Node.js 20 or newer.
 
 ```bash
-npx --package @intentsolutions/blueprint@2.9.0 blueprint --help
+npx --package @intentsolutions/blueprint@3.0.0 blueprint --help
 ```
 
 The published package contains the CLI, JavaScript library, MCP binary, and a generated mirror of the historical templates. There are not separate `-core` or `-mcp` npm packages.
@@ -47,7 +60,7 @@ Repository-local clients can use `.mcp.json`. An equivalent stdio configuration 
     "blueprint-docs": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "--package", "@intentsolutions/blueprint@2.9.0", "blueprint-mcp"]
+      "args": ["-y", "--package", "@intentsolutions/blueprint@3.0.0", "blueprint-mcp"]
     }
   }
 }

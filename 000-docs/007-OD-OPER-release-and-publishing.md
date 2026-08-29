@@ -17,7 +17,7 @@ Two workspace packages are publishable. The release workflow currently publishes
 2. **Changelog**: Update `CHANGELOG.md` with changes
 3. **Build**: `npm run build` (all packages via Turbo)
 4. **Test**: `npm run test && npm run lint`
-5. **Tag**: `git tag v2.x.x`
+5. **Tag**: `git tag v<package-version>` (for example, `v3.0.0`)
 6. **Publish**: `npm publish --workspace=@intentsolutions/blueprint --access public --provenance`
 7. **Push tags**: `git push --tags`
 

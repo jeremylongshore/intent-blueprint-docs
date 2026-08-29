@@ -6,6 +6,8 @@ on:
 
 permissions:
   contents: write
+  id-token: write
+  attestations: write
 
 jobs:
   release:
@@ -25,6 +27,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Verify pinned test policy and conformance
+        run: |
+          npx audit-harness verify
+          npx audit-harness conform .
+
+      - name: Check generated mirrors before build
+        run: npm run templates:check
+
       - name: Build all packages
         run: npm run build
 
@@ -34,15 +44,67 @@ jobs:
       - name: Verify templates and package mirror
         run: npm run verify
 
-      - name: Publish CLI, library, and MCP binary
-        run: npm publish --workspace=@intentsolutions/blueprint --access public --provenance
+      - name: Verify tag and package version
+        run: npm run verify:version
+
+      - name: Pack the release artifact once
+        id: pack
+        shell: bash
+        run: |
+          npm pack --workspace=@intentsolutions/blueprint --json > pack-result.json
+          TARBALL=$(node -e "const p=require('./pack-result.json'); const r=Array.isArray(p)?p[0]:p['@intentsolutions/blueprint']; process.stdout.write(r.filename)")
+          VERSION=$(node -p "require('./packages/cli/package.json').version")
+          echo "tarball=$TARBALL" >> "$GITHUB_OUTPUT"
+          echo "release_version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "TARBALL=$TARBALL" >> "$GITHUB_ENV"
+          echo "RELEASE_VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Smoke-test the exact tarball
+        shell: bash
+        run: |
+          TEMP_DIR=$(mktemp -d)
+          npm install --prefix "$TEMP_DIR" "$GITHUB_WORKSPACE/$TARBALL"
+          node scripts/smoke-packed-artifact.mjs "$TEMP_DIR"
+
+      - name: Generate and validate SBOM and checksum
+        shell: bash
+        run: |
+          npm sbom --workspace=@intentsolutions/blueprint --sbom-format cyclonedx > blueprint-sbom.cdx.json
+          sha256sum "$TARBALL" > "$TARBALL.sha256"
+          node -e "const x=require('./blueprint-sbom.cdx.json'); if(x.bomFormat!=='CycloneDX'||!x.components?.length) throw new Error('Invalid SBOM')"
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: ${{ steps.pack.outputs.tarball }}
+
+      - name: Publish the tested CLI, library, and MCP tarball
+        run: npm publish "$TARBALL" --access public --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Verify published integrity and npm attestations
+        shell: bash
+        run: |
+          LOCAL_INTEGRITY=$(node -e "const p=require('./pack-result.json'); const r=Array.isArray(p)?p[0]:p['@intentsolutions/blueprint']; process.stdout.write(r.integrity)")
+          PUBLISHED_INTEGRITY=$(npm view "@intentsolutions/blueprint@$RELEASE_VERSION" dist.integrity --json | tr -d '"')
+          test "$LOCAL_INTEGRITY" = "$PUBLISHED_INTEGRITY"
+          VERIFY_DIR=$(mktemp -d)
+          npm install --prefix "$VERIFY_DIR" "@intentsolutions/blueprint@$RELEASE_VERSION"
+          npm --prefix "$VERIFY_DIR" audit signatures
+
+      - name: Create release evidence receipt
+        run: node scripts/create-release-receipt.mjs "$TARBALL" blueprint-sbom.cdx.json pack-result.json release-receipt.json
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
+          files: |
+            ${{ steps.pack.outputs.tarball }}
+            ${{ steps.pack.outputs.tarball }}.sha256
+            blueprint-sbom.cdx.json
+            release-receipt.json
           body: |
             ## Installation
 
@@ -63,7 +125,7 @@ jobs:
                 "blueprint": {
                   "type": "stdio",
                   "command": "npx",
-                  "args": ["-y", "--package", "@intentsolutions/blueprint@2.9.0", "blueprint-mcp"]
+                  "args": ["-y", "--package", "@intentsolutions/blueprint@${{ steps.pack.outputs.release_version }}", "blueprint-mcp"]
                 }
               }
             }

@@ -27,7 +27,7 @@ Template marketplace, plugin system, and community-contributed template packs fo
 
 ## Current Status
 
-**Version:** 2.9.0 (modernization release line)
+**Version:** 3.0.0 (schema-backed workbook release line)
 
 ### Completed
 - 22 professional templates with dynamic date placeholders

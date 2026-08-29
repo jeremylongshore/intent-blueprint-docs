@@ -14,7 +14,7 @@ The MCP binary and core library are shipped in the same npm package. There is no
     "blueprint-docs": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "--package", "@intentsolutions/blueprint@2.9.0", "blueprint-mcp"]
+      "args": ["-y", "--package", "@intentsolutions/blueprint@3.0.0", "blueprint-mcp"]
     }
   }
 }

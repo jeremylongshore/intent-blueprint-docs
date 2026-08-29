@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Intent Blueprint Docs** is a model-neutral documentation system. The canonical portable Agent Skill guides evidence-backed authoring; the deterministic core, CLI, MCP server, and host adapters render and review a selectable 22-workbook lifecycle corpus.
 
-**Release:** v2.9.0 - Model-neutral Blueprint modernization
+**Release:** v3.0.0 - Schema-backed Blueprint workbooks
 **Template Count:** 22 canonical historical templates plus a generated package mirror
 
 ## Task Tracking (Beads)
@@ -119,7 +119,7 @@ Follow steps 2-4 in `.cursorrules/` for structured workflow.
 ## Architecture Notes
 
 - **22 templates** in `professional-templates/` with `{{DATE}}` placeholders for dynamic date insertion
-- **Dual AI support** - Claude Code CLI (free-form) and Cursor IDE (structured)
+- **Model-neutral host support** - Portable Agent Skill plus thin Claude Code, Codex, Cursor, Gemini, CLI, and MCP adapters
 - **Enterprise E2E** validated via GitHub Actions
 - **Node.js required** for form-system and enterprise scripts
 - **Monorepo** with workspaces in `packages/` (cli, chatbots)

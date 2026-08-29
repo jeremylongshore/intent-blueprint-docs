@@ -23,6 +23,7 @@ import type {
   AuditStatsResponse,
 } from './types.js';
 import { TemplateEngine } from '../templates/engine.js';
+import { VERSION } from '../../version.js';
 import { TemplateLoader } from '../templates/loader.js';
 import { AuditTrail } from '../team/audit.js';
 import type { CustomTemplate } from '../templates/types.js';
@@ -363,7 +364,7 @@ export class ApiServer {
   private handleHealth(_req: ApiRequest, res: ApiResponseWriter): void {
     const response: HealthCheckResponse = {
       status: 'healthy',
-      version: '2.9.0',
+      version: VERSION,
       uptime: Date.now() - this.startTime,
       checks: {
         templates: true,
