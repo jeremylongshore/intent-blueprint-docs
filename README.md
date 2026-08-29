@@ -79,7 +79,9 @@ npm run templates:check
 npm run test:docs
 npm run test:skills
 npm test
+npm run lint
 npm run build
+npm run verify
 ```
 
 `professional-templates/core/` is the canonical historical corpus. Never edit `packages/cli/templates/core/` directly; run `npm run templates:sync`. CI and `npm run verify` fail if the package mirror drifts.

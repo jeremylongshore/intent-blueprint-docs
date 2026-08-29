@@ -126,7 +126,7 @@ Follow steps 2-4 in `.cursorrules/` for structured workflow.
 
 ## GitHub
 
-- **Repo:** https://github.com/intent-solutions-io/intent-blueprint-docs
+- **Repo:** https://github.com/jeremylongshore/intent-blueprint-docs
 - **Org:** Intent Solutions
 
 ## Testing baseline (2026-05-01 — Intent Solutions Testing SOP)
