@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "md-to-pdf": "^5.2.5"
+  }
+}
