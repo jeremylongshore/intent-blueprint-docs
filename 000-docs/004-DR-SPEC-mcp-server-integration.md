@@ -1,122 +1,51 @@
 # 004 - MCP Server Integration
 
-## Overview
+## Purpose
 
-The Blueprint MCP server exposes document generation capabilities to any MCP-compatible AI tool (Claude, Cursor, VS Code, Google Antigravity, Amp).
+The Blueprint MCP server is a thin, model-neutral stdio adapter over `@intentsolutions/blueprint`. It lists catalog entries, gathers intake, previews deterministic workbooks, and writes files only when the caller explicitly requests a write.
 
-## Installation
+The MCP binary and core library are shipped in the same npm package. There is no separate `@intentsolutions/blueprint-mcp` package.
 
-### Claude / Claude Code
+## Configuration
+
 ```json
 {
   "mcpServers": {
-    "blueprint": {
+    "blueprint-docs": {
+      "type": "stdio",
       "command": "npx",
-      "args": ["@intentsolutions/blueprint-mcp"]
+      "args": ["-y", "--package", "@intentsolutions/blueprint@3.0.0", "blueprint-mcp"]
     }
   }
 }
 ```
 
-### Cursor / VS Code
-Add to MCP settings. The server auto-discovers when configured.
+Client-specific placement and trust prompts vary, but the server contract does not depend on a particular model provider.
 
-## MCP Tools
+## Tools
 
 ### `blueprint_generate`
-Generate documentation from a project description.
 
-**Input:**
-```json
-{
-  "projectName": "string (required)",
-  "projectDescription": "string (required)",
-  "scope": "mvp | standard | comprehensive (default: standard)",
-  "audience": "business | technical | mixed (default: business)",
-  "outputDir": "string (default: ./docs)"
-}
-```
-
-**Output:** Generated document paths and content summary.
+Renders the document set for `mvp`, `standard`, or `comprehensive` scope. Required fields are `projectName` and `projectDescription`; optional context includes audience, project type, and technology constraints. It returns previews by default. Set `writeFiles: true` to write to `outputDir`.
 
 ### `blueprint_interview`
-Start an AI-guided intake session with adaptive questioning.
 
-**Input:**
-```json
-{
-  "projectName": "string (optional - asked if missing)"
-}
-```
-
-**Output:** Interview questions and collected answers, then generated docs.
+Accepts `answers` and an action of `start`, `answer`, `complete`, or `analyze`. It returns the next question or an analysis that can be passed to generation.
 
 ### `blueprint_list_templates`
-List available templates with metadata.
 
-**Input:**
-```json
-{
-  "scope": "mvp | standard | comprehensive (optional)",
-  "category": "string (optional)"
-}
-```
-
-**Output:** Template list with names, categories, and descriptions.
+Lists the exact catalog and can filter by scope or category. Returned template IDs, rather than filesystem paths, are the customization boundary.
 
 ### `blueprint_customize`
-Customize a single template with specific inputs.
 
-**Input:**
-```json
-{
-  "templateName": "string (required)",
-  "projectName": "string (required)",
-  "customFields": "object (optional)"
-}
-```
+Previews one catalog-bound workbook using `templateId`, `projectName`, `projectDescription`, and `customFields`. Unknown IDs and traversal strings fail with a structured MCP tool error.
 
-**Output:** Customized document content.
+## Side effects and errors
 
-### `blueprint_export`
-Export generated docs to external platforms.
+Only `blueprint_generate` with `writeFiles: true` writes to the filesystem. Listing, interviewing, customization, and generation previews are read-only. Export to GitHub, Linear, Jira, or Notion is not an MCP tool in this release.
 
-**Input:**
-```json
-{
-  "source": "string (path to generated docs)",
-  "target": "github | linear | jira | notion",
-  "config": "object (platform-specific settings)"
-}
-```
+Validation and runtime failures return `isError: true` with a human-readable message. The server never interprets a caller-supplied template ID as a path.
 
-**Output:** Export status and links.
+## Verification
 
-## Architecture
-
-```
-MCP Client (Claude/Cursor)
-    │
-    ▼
-MCP Server (@intentsolutions/blueprint-mcp)
-    │
-    ▼
-Core Engine (@intentsolutions/blueprint-core)
-    │
-    ▼
-Template Engine → File System / Export
-```
-
-The MCP server is a thin adapter over the core engine. All business logic lives in `blueprint-core`.
-
-## Error Handling
-
-All tools return structured errors:
-```json
-{
-  "error": {
-    "code": "TEMPLATE_NOT_FOUND | INVALID_SCOPE | GENERATION_FAILED",
-    "message": "Human-readable description"
-  }
-}
-```
+Release gates must build the package, run core tests, smoke-test MCP initialization and `tools/list`, confirm the four declared tool schemas match their handlers, verify that traversal is rejected, and smoke-install the packed npm artifact before publication.

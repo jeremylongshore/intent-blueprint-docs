@@ -1,0 +1,5 @@
+[
+  {"name": "comprehensive_review", "prompt": "Review the docs in completed-docs/test-project/", "assertions": ["Produces health score", "Lists all 8 rubric categories", "Classifies issues as critical or informational"]},
+  {"name": "scope_check", "prompt": "Check if completed-docs/mvp-project/ matches MVP scope", "assertions": ["Checks for exactly 4 MVP docs", "Reports missing templates"]},
+  {"name": "negative_test", "prompt": "Write a Python function to sort a list", "assertions": ["Skill does not activate for non-documentation tasks"]}
+]

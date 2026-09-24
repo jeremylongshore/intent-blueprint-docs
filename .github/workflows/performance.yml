@@ -5,9 +5,6 @@ on:
       site_url:
         description: "Public URL to audit (https://...)"
         required: false
-  # schedule disabled — burns Actions minutes
-  # schedule:
-  #   - cron: "0 4 * * 1"   # weekly, 04:00 UTC Mondays
 permissions:
   contents: read
 jobs:
@@ -19,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: "18" }  # cache disabled until package-lock.json is committed
+        with: { node-version: "20" }
 
       - name: Skip if no URL
         run: |

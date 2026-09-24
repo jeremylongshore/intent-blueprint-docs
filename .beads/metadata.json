@@ -1,7 +1,7 @@
 {
   "database": "dolt",
   "backend": "dolt",
-  "dolt_mode": "server",
-  "dolt_database": "ai_devops_intent_solutions",
-  "project_id": "d0ce40a2-8dfb-4f8d-a8fd-3dd063f484cb"
+  "dolt_mode": "embedded",
+  "dolt_database": "blueprint",
+  "project_id": "5d75ae74-c87a-45b8-85e7-c473b86328dc"
 }

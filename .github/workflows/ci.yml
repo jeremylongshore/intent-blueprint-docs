@@ -11,40 +11,71 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18, 20, 22]
+        # vitest 4.x (devDep) requires node ^20 || ^22 || >=24; node 18 is EOL
+        # (2025-04-30) and cannot run the test steps (rolldown imports
+        # node:util's styleText, added in node 20.12/22).
+        node-version: [20, 22, 24]
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          # cache: 'npm'  # Disabled until package-lock.json is committed
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+
+      - name: Verify pinned test policy and scan the change boundary
+        run: |
+          npx audit-harness verify
+          npx audit-harness escape-scan --range origin/main...HEAD
+
+      - name: Run portable conformance and testing-depth gates
+        run: |
+          npx audit-harness conform .
+          npx audit-harness audit .
+
+      - name: Check generated mirrors before build
+        run: npm run templates:check
 
       - name: Build all packages
         run: npm run build
 
       - name: Run tests
         run: npm test
-        continue-on-error: true
+
+      - name: Validate skills
+        run: npm run test:skills
+
+      - name: Check template freshness
+        run: npm run skill:check
 
   lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          # cache: 'npm'  # Disabled until package-lock.json is committed
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+
+      - name: Verify pinned test policy
+        run: npx audit-harness verify
+
+      - name: Lint source and tests
+        run: npm run lint
 
       - name: Type check
         run: npm run build

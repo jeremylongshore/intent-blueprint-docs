@@ -160,7 +160,7 @@ function markdownToHtml(markdown: string): string {
   });
 
   // Unordered lists
-  html = html.replace(/^[\-\*] (.+)$/gm, '<li>$1</li>');
+  html = html.replace(/^[-*] (.+)$/gm, '<li>$1</li>');
   html = html.replace(/(<li>.+<\/li>\n?)+/g, '<ul>$&</ul>\n');
 
   // Ordered lists

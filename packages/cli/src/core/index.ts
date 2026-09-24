@@ -4,9 +4,19 @@
  */
 
 import Handlebars from 'handlebars';
-import { readFileSync, readdirSync, existsSync, mkdirSync, writeFileSync } from 'fs';
+import { readFileSync, existsSync, mkdirSync, writeFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { TEMPLATE_DEFINITIONS, validateTemplateCatalog } from './catalog.js';
+import { renderSchemaBlueprint } from './renderer.js';
+import type { DocumentMetadata, GenerationReceiptV1 } from './schema.js';
+import type { EvidenceItem, TraceGraph } from './schema.js';
+
+export * from './schema.js';
+export * from './catalog.js';
+export * from './modules.js';
+export * from './examples.js';
+export * from './renderer.js';
 
 // Types
 export interface TemplateContext {
@@ -19,6 +29,18 @@ export interface TemplateContext {
   features?: string[];
   timeline?: string;
   team?: string;
+  generatedAt?: string;
+  owner?: string;
+  reviewers?: string[];
+  status?: 'draft' | 'in-review' | 'approved';
+  evidence?: Array<string | EvidenceItem>;
+  assumptions?: string[];
+  unknowns?: string[];
+  sourceRefs?: string[];
+  sourceHashes?: Record<string, string>;
+  traceGraph?: TraceGraph;
+  includeExamplePacks?: string[];
+  generationMode?: 'schema' | 'legacy';
   [key: string]: unknown;
 }
 
@@ -27,6 +49,8 @@ export interface GeneratedDocument {
   filename: string;
   content: string;
   category: string;
+  metadata?: DocumentMetadata;
+  receipt?: GenerationReceiptV1;
 }
 
 export interface TemplateInfo {
@@ -36,26 +60,6 @@ export interface TemplateInfo {
   category: string;
   description: string;
 }
-
-// Template categories
-const TEMPLATE_CATEGORIES: Record<string, string[]> = {
-  'Product & Strategy': ['01_prd.md', '05_market_research.md', '07_competitor_analysis.md', '08_personas.md', '14_project_brief.md'],
-  'Technical Architecture': ['02_adr.md', '06_architecture.md', '16_frontend_spec.md', '19_operational_readiness.md'],
-  'User Experience': ['09_user_journeys.md', '10_user_stories.md', '11_acceptance_criteria.md'],
-  'Development Workflow': ['03_generate_tasks.md', '04_process_task_list.md', '13_risk_register.md', '15_brainstorming.md', '20_metrics_dashboard.md'],
-  'Quality Assurance': ['17_test_plan.md', '12_qa_gate.md', '18_release_plan.md', '21_postmortem.md', '22_playtest_usability.md']
-};
-
-// Scope mappings
-const SCOPE_TEMPLATES: Record<string, string[]> = {
-  mvp: ['01_prd.md', '03_generate_tasks.md', '14_project_brief.md', '15_brainstorming.md'],
-  standard: [
-    '01_prd.md', '02_adr.md', '03_generate_tasks.md', '06_architecture.md',
-    '08_personas.md', '09_user_journeys.md', '10_user_stories.md', '11_acceptance_criteria.md',
-    '14_project_brief.md', '15_brainstorming.md', '17_test_plan.md', '18_release_plan.md'
-  ],
-  comprehensive: Object.values(TEMPLATE_CATEGORIES).flat()
-};
 
 /**
  * Get the templates directory path
@@ -84,47 +88,45 @@ export function getTemplatesDir(): string {
  * List all available templates
  */
 export function listTemplates(): TemplateInfo[] {
-  const templatesDir = getTemplatesDir();
-  const files = readdirSync(templatesDir).filter(f => f.endsWith('.md'));
+  validateTemplateCatalog(getTemplatesDir());
+  return TEMPLATE_DEFINITIONS.map(({ id, name, filename, category, description }) => ({
+    id, name, filename, category, description,
+  }));
+}
 
-  return files.map(filename => {
-    const id = filename.replace('.md', '');
-    const name = id.replace(/^\d+_/, '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-    const category = Object.entries(TEMPLATE_CATEGORIES).find(([, templates]) =>
-      templates.includes(filename)
-    )?.[0] || 'Other';
+function resolveTemplate(templateName: string): TemplateInfo {
+  const normalized = templateName.endsWith('.md') ? templateName : `${templateName}.md`;
+  const template = listTemplates().find(item => item.filename === normalized || item.id === templateName);
 
-    return {
-      id,
-      name,
-      filename,
-      category,
-      description: `Generate ${name} documentation`
-    };
-  });
+  if (!template) {
+    throw new Error(`Unknown template ID: ${templateName}`);
+  }
+
+  return template;
 }
 
 /**
  * Get templates for a specific scope
  */
 export function getTemplatesForScope(scope: 'mvp' | 'standard' | 'comprehensive'): TemplateInfo[] {
-  const scopeTemplates = SCOPE_TEMPLATES[scope];
-  return listTemplates().filter(t => scopeTemplates.includes(t.filename));
+  const allowed = new Set(TEMPLATE_DEFINITIONS.filter(item => item.scopes.includes(scope)).map(item => item.id));
+  return listTemplates().filter(item => allowed.has(item.id));
 }
 
 /**
  * Read and compile a template
  */
-export function compileTemplate(templateName: string): HandlebarsTemplateDelegate {
+export function compileTemplate(templateName: string, generatedAt?: string): HandlebarsTemplateDelegate {
   const templatesDir = getTemplatesDir();
-  const templatePath = join(templatesDir, templateName.endsWith('.md') ? templateName : `${templateName}.md`);
-
-  if (!existsSync(templatePath)) {
-    throw new Error(`Template not found: ${templateName}`);
-  }
+  const template = resolveTemplate(templateName);
+  const templatePath = join(templatesDir, template.filename);
 
   const templateContent = readFileSync(templatePath, 'utf-8');
-  const withDate = templateContent.replace(/\{\{DATE\}\}/g, new Date().toISOString().split('T')[0]);
+  const generationDate = generatedAt ? new Date(generatedAt) : new Date();
+  if (Number.isNaN(generationDate.getTime())) {
+    throw new Error(`Invalid generatedAt timestamp: ${generatedAt}`);
+  }
+  const withDate = templateContent.replace(/\{\{DATE\}\}/g, generationDate.toISOString().split('T')[0]);
 
   return Handlebars.compile(withDate);
 }
@@ -133,16 +135,30 @@ export function compileTemplate(templateName: string): HandlebarsTemplateDelegat
  * Generate a single document from a template
  */
 export function generateDocument(templateName: string, context: TemplateContext): GeneratedDocument {
-  const template = compileTemplate(templateName);
-  const content = template(context);
+  const info = resolveTemplate(templateName);
+  const safeProjectName = context.projectName
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '') || 'project';
 
-  const info = listTemplates().find(t => t.filename === templateName || t.id === templateName);
+  if (context.generationMode === 'legacy') {
+    const template = compileTemplate(info.filename, context.generatedAt);
+    return {
+      name: info.name,
+      filename: `${safeProjectName}-${info.filename}`,
+      content: `> [!WARNING]\n> Legacy compatibility output. It may contain illustrative defaults and cannot be approved without migration and evidence review.\n\n${template(context)}`,
+      category: info.category,
+    };
+  }
 
+  const rendered = renderSchemaBlueprint(info.id, context);
   return {
-    name: info?.name || templateName,
-    filename: `${context.projectName.toLowerCase().replace(/\s+/g, '-')}-${templateName}`,
-    content,
-    category: info?.category || 'Other'
+    name: info.name,
+    filename: rendered.receipt.output.filename,
+    content: rendered.content,
+    category: info.category,
+    metadata: rendered.metadata,
+    receipt: rendered.receipt,
   };
 }
 

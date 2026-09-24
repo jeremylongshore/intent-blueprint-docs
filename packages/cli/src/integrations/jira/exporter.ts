@@ -451,7 +451,7 @@ export class JiraExporter {
       .replace(/\[(urgent|highest|high|medium|low|lowest)\]/gi, '')
       .replace(/\[\d+\s*(?:pt|sp|points?)\]/gi, '')
       .replace(/\[(feature|bug|tech-debt|research|design|devops|security|testing|documentation)\]/gi, '')
-      .replace(/[🔴🟠🟡🟢]/g, '')
+      .replace(/[🔴🟠🟡🟢]/gu, '')
       .trim();
   }
 

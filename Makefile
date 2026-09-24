@@ -1,4 +1,4 @@
-.PHONY: verify tree clean enterprise enterprise-ci release-check
+.PHONY: verify tree clean enterprise enterprise-ci release-check gen-skills skill-check
 
 verify:
 	@./scripts/verify-templates.sh
@@ -15,6 +15,12 @@ enterprise:
 
 enterprise-ci:
 	@node scripts/run-enterprise.mjs --project "$(PROJECT)" --answers "$(ANSWERS)"
+
+gen-skills:
+	@npx tsx scripts/gen-skill-docs.ts
+
+skill-check:
+	@npx tsx scripts/gen-skill-docs.ts --dry-run
 
 release-check:
 	@echo "Release validation starting..."

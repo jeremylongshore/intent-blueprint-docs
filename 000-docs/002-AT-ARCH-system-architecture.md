@@ -2,7 +2,7 @@
 
 ## Overview
 
-Intent Blueprint Docs is a monorepo with three publishable packages, a template engine, and supporting infrastructure.
+Intent Blueprint Docs is a monorepo with one canonical portable skill, a provider-neutral deterministic core, two workspace packages, and thin host adapters.
 
 ## Architecture Diagram
 
@@ -16,7 +16,7 @@ Intent Blueprint Docs is a monorepo with three publishable packages, a template 
                          │          │         │
                     ┌────▼──────────▼─────────▼────┐
                     │     @intentsolutions/        │
-                    │      blueprint-core          │
+                    │        blueprint             │
                     │                              │
                     │  ┌──────────┐ ┌───────────┐  │
                     │  │ Template │ │  Plugin   │  │
@@ -47,9 +47,8 @@ intent-blueprint-docs/
 │   │   │   └── index.ts       # CLI entrypoint
 │   │   └── package.json
 │   │
-│   └── chatbots/              # MCP server + chatbot integrations
+│   └── chatbots/              # Slack + Discord integrations
 │       ├── src/
-│       │   ├── mcp/           # MCP tool definitions
 │       │   └── index.ts
 │       └── package.json
 │
@@ -64,7 +63,7 @@ intent-blueprint-docs/
 
 ### Template Engine
 - Reads templates from `professional-templates/`
-- Replaces `{{DATE}}` and other placeholders
+- Prepends project/provenance context and replaces the legacy `{{DATE}}` token
 - Validates template completeness
 - Supports scope filtering (MVP/Standard/Comprehensive)
 
@@ -74,9 +73,9 @@ intent-blueprint-docs/
 - Built-in plugins: markdown-formatter, html-formatter, quality-validator
 
 ### MCP Server
-- Exposes 5 tools: generate, interview, list_templates, customize, export
+- Exposes 4 tools: generate, interview, list_templates, and customize
 - Stateless design - each call is independent
-- Works with Claude, Cursor, VS Code, and any MCP client
+- Uses standard stdio MCP so compatible hosts can connect without provider-specific business logic
 
 ### Enterprise Pipeline
 - 17-question structured intake (`scripts/run-enterprise.mjs`)
@@ -89,7 +88,7 @@ intent-blueprint-docs/
 | Component | Technology |
 |-----------|-----------|
 | Language | TypeScript 5.3+ |
-| Runtime | Node.js 18+ |
+| Runtime | Node.js 20+ |
 | Build | Turbo (monorepo) |
 | Package Manager | npm (workspaces) |
 | CI/CD | GitHub Actions |

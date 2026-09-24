@@ -1,0 +1,5 @@
+[
+  {"name": "post_ship_sync", "prompt": "Update docs after shipping v2.1.0", "assertions": ["Audits all markdown files", "Applies factual corrections", "Polishes changelog voice"]},
+  {"name": "nothing_to_update", "prompt": "Sync docs when nothing changed", "assertions": ["Reports all documentation up to date"]},
+  {"name": "negative_test", "prompt": "Create a new architecture document", "assertions": ["Skill does not activate for document creation"]}
+]

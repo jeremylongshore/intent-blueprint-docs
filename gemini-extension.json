@@ -1,0 +1,12 @@
+{
+  "name": "blueprint-docs",
+  "version": "3.0.0",
+  "description": "Evidence-backed product and engineering documentation",
+  "contextFileName": "GEMINI.md",
+  "mcpServers": {
+    "blueprint-docs": {
+      "command": "npx",
+      "args": ["-y", "--package", "@intentsolutions/blueprint@3.0.0", "blueprint-mcp"]
+    }
+  }
+}

@@ -1,0 +1,5 @@
+[
+  {"name": "full_review", "prompt": "Review the architecture docs in completed-docs/test-saas/", "assertions": ["Scores all 15 cognitive patterns", "Checks ADR quality", "Produces overall score"]},
+  {"name": "adr_only", "prompt": "Review the ADR at completed-docs/test-saas/02_adr.md", "assertions": ["Checks context, decision, alternatives, consequences, status"]},
+  {"name": "negative_test", "prompt": "Create a new PRD for my project", "assertions": ["Skill does not activate for document creation tasks"]}
+]

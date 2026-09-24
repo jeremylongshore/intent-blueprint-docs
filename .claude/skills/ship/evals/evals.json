@@ -1,0 +1,5 @@
+[
+  {"name": "standard_ship", "prompt": "Ship a release for intent-blueprint-docs", "assertions": ["Validates 22 templates", "Runs build and tests", "Bumps version", "Creates PR"]},
+  {"name": "on_main_abort", "prompt": "Ship from the main branch", "assertions": ["Detects main branch and aborts"]},
+  {"name": "negative_test", "prompt": "Review the architecture docs", "assertions": ["Skill does not activate for doc review tasks"]}
+]

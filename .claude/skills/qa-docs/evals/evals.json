@@ -1,0 +1,5 @@
+[
+  {"name": "full_audit", "prompt": "Audit the docs in completed-docs/test-project/", "assertions": ["Scores all 5 dimensions", "Produces health score out of 100", "Lists findings by severity"]},
+  {"name": "quick_mode", "prompt": "Quick quality check on completed-docs/test-project/", "assertions": ["Produces scores without per-document detail"]},
+  {"name": "negative_test", "prompt": "Fix the broken tests in src/", "assertions": ["Skill does not activate for code tasks"]}
+]
