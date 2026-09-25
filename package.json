@@ -48,7 +48,7 @@
   "homepage": "https://github.com/jeremylongshore/intent-blueprint-docs#readme",
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
-    "@intentsolutions/audit-harness": "^1.3.1",
+    "@intentsolutions/audit-harness": "^1.4.0",
     "oxlint": "^1.80.0",
     "tsx": "^4.19.0",
     "turbo": "^2.0.0",
