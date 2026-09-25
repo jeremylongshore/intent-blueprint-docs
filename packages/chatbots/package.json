@@ -34,7 +34,7 @@
     "@intentsolutions/blueprint": "*",
     "@slack/bolt": "^3.17.0",
     "discord.js": "^14.18.0",
-    "nodemailer": "^9.0.6",
+    "nodemailer": "^9.1.1",
     "archiver": "^6.0.0"
   },
   "devDependencies": {
