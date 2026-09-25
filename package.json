@@ -53,7 +53,7 @@
     "tsx": "^4.19.0",
     "turbo": "^2.0.0",
     "typescript": "^5.3.0",
-    "vitest": "^4.0.0"
+    "vitest": "^4.1.11"
   },
   "overrides": {
     "hono": ">=4.11.7",
