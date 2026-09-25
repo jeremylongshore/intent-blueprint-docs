@@ -1,0 +1,117 @@
+% Intent Blueprint - Professional Template PDF
+% Clean, enterprise-grade documentation
+
+\documentclass[11pt,letterpaper]{article}
+
+% Page geometry - 8.5x11 with professional margins
+\usepackage[margin=1in]{geometry}
+
+% Colors
+\usepackage{xcolor}
+\definecolor{IBBlue}{RGB}{59,130,246}
+\definecolor{IBDark}{RGB}{30,41,59}
+\definecolor{IBGray}{RGB}{107,114,128}
+\definecolor{IBLight}{RGB}{248,250,252}
+
+% Typography
+\usepackage{fontspec}
+\setmainfont{DejaVu Serif}[Scale=0.95]
+\setsansfont{DejaVu Sans}[Scale=0.95]
+\setmonofont{DejaVu Sans Mono}[Scale=0.85]
+
+% Required for pandoc tables
+\usepackage{calc}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\renewcommand{\arraystretch}{1.3}
+
+% Headers/footers
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{IBGray}\textsf{Intent Blueprint}}
+\fancyhead[R]{\small\color{IBGray}\textsf{Documentation Template}}
+\fancyfoot[C]{\small\color{IBGray}\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+
+% Hyperlinks
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=IBBlue,
+  urlcolor=IBBlue,
+  pdfborder={0 0 0}
+}
+
+% Section styling
+\usepackage{titlesec}
+\titleformat{\section}
+  {\Large\bfseries\sffamily\color{IBDark}}
+  {\thesection}{1em}{}
+\titleformat{\subsection}
+  {\large\bfseries\sffamily\color{IBBlue}}
+  {\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\sffamily\color{IBGray}}
+  {\thesubsubsection}{1em}{}
+\titlespacing*{\section}{0pt}{2em}{1em}
+\titlespacing*{\subsection}{0pt}{1.5em}{0.75em}
+
+% Lists
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=1.5em,itemsep=0.3em}
+\setlist[enumerate]{leftmargin=1.5em,itemsep=0.3em}
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+% Code blocks
+\usepackage{listings}
+\lstset{
+  basicstyle=\small\ttfamily,
+  backgroundcolor=\color{IBLight},
+  frame=none,
+  breaklines=true,
+  columns=fullflexible,
+  xleftmargin=1em,
+  aboveskip=1em,
+  belowskip=1em
+}
+
+% Graphics
+\usepackage{graphicx}
+
+% Math symbols (for checkboxes)
+\usepackage{amssymb}
+
+% Paragraphs
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.75em}
+
+% Title
+\usepackage{titling}
+\pretitle{\begin{center}\LARGE\bfseries\sffamily\color{IBDark}}
+\posttitle{\end{center}\vspace{0.5em}}
+\preauthor{\begin{center}\large\color{IBGray}\sffamily}
+\postauthor{\end{center}}
+\predate{\begin{center}\normalsize\color{IBGray}}
+\postdate{\end{center}\vspace{1em}\hrule\vspace{1em}}
+
+% Metadata
+\title{$title$}
+\author{Intent Solutions}
+\date{$date$}
+
+\begin{document}
+
+$if(title)$
+\maketitle
+$endif$
+
+$if(toc)$
+\tableofcontents
+\newpage
+$endif$
+
+$body$
+
+\end{document}

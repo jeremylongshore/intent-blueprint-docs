@@ -1,0 +1,6 @@
+# Generated artifacts (rebuild with generate-templates.sh)
+pdf/output/
+pdf/.temp/
+pdf/*.zip
+email/dist/
+.env
