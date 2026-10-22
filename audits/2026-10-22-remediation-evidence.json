@@ -1,0 +1,109 @@
+{
+  "observed_at_utc": "2026-10-22T04:56:45.380203+00:00",
+  "scope": "Enterprise, CLI, MCP, exports, dependency currency and portable skill plugin remediation",
+  "historical_audit_commit": "1c5913bb18be8a908b08018f28978b486308024e",
+  "resolved_beads": [
+    "blueprint-owe",
+    "blueprint-2t8",
+    "blueprint-828",
+    "blueprint-1jr",
+    "blueprint-gbb",
+    "blueprint-vdh",
+    "blueprint-l34"
+  ],
+  "remaining_requested_followup": {
+    "id": "blueprint-2s0",
+    "title": "Grade README usability against KISS for first-time users",
+    "status": "open"
+  },
+  "tests": {
+    "root_passed": 195,
+    "cli_passed": 38,
+    "chatbot_passed": 2,
+    "total_passed": 235,
+    "optional_model_evaluations_skipped": 3
+  },
+  "clean_checkout": {
+    "npm_ci_ignore_scripts": true,
+    "npm_test_without_existing_dist": true,
+    "npm_verify": true
+  },
+  "other_gates": {
+    "lint": true,
+    "template_mirror": true,
+    "version_and_adapter_entrypoints": true,
+    "generated_command_freshness": true,
+    "harness_hash": true,
+    "portable_plugin_json_schema": true,
+    "portable_skill_structural_validation": true
+  },
+  "enterprise": {
+    "fixture_runner_passed": true,
+    "workbooks": 22,
+    "receipts": 22,
+    "source_hash_and_input_evidence_verified": true,
+    "edited_output_rejected": true,
+    "unintended_overwrite_rejected": true
+  },
+  "exports": {
+    "empty_workbooks_produce_zero_tasks": true,
+    "invented_default_cycles_removed": true,
+    "adapters": [
+      "GitHub",
+      "Linear",
+      "Jira"
+    ],
+    "live_external_writes": false
+  },
+  "installed_product_tarball": {
+    "library_smoke": true,
+    "cli_version": "3.0.0",
+    "mcp_stdio_tool_count": 4
+  },
+  "plugin": {
+    "archive": "dist/plugin/blueprint-docs.zip",
+    "sha256": "34e134ab8af95707a0f4da1be0def276c40d8631e289235d3d676a357c727575",
+    "extracted_runtime_passed": true,
+    "offline_runtime_requires": "Node.js >=20",
+    "codex_native_install": "blueprint-docs@intent-blueprint",
+    "codex_enabled": true,
+    "claude_strict_directory_validation": true,
+    "claude_directory_findings": [],
+    "grok_build": "documented plugin-directory integration; no model session executed",
+    "directory_submission_performed": false
+  },
+  "dependency_audits": {
+    "root": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "email": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "pdf": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    }
+  },
+  "limits": [
+    "No npm release or directory submission",
+    "No live Grok or Claude model authoring evaluation",
+    "No authenticated external exports, email sends or chat messages",
+    "No PDF render",
+    "Numeric line coverage not measured",
+    "Local marketplace skill rubric grade C is advisory; portable host validation passed"
+  ]
+}

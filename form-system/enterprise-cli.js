@@ -116,6 +116,7 @@ function composeMarkdown(project, questions, answers) {
     if (args.help || !args.project) {
       usage(); process.exit(args.help ? 0 : 1);
     }
+    if (!/^[a-zA-Z0-9_][a-zA-Z0-9_-]*$/.test(args.project)) throw new Error('Invalid project name');
     const outRoot = args.out || 'completed-docs';
     const questionsPath = path.join('form-system', 'enterprise-questions.yaml');
     const questions = loadQuestions(questionsPath);

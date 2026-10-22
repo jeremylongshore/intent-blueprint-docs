@@ -7,6 +7,8 @@
 
 export { VERSION } from './version.js';
 
+export { generateEnterpriseDocuments } from './core/enterprise.js';
+
 // Core exports for programmatic use
 export {
   listTemplates,

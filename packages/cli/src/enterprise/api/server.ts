@@ -27,6 +27,8 @@ import { VERSION } from '../../version.js';
 import { TemplateLoader } from '../templates/loader.js';
 import { AuditTrail } from '../team/audit.js';
 import type { CustomTemplate } from '../templates/types.js';
+import { listTemplates, generateDocument, type TemplateContext } from '../../core/index.js';
+import { TEMPLATE_BY_ID } from '../../core/catalog.js';
 
 const DEFAULT_PORT = 3456;
 const DEFAULT_HOST = 'localhost';
@@ -127,6 +129,8 @@ export class ApiServer {
       }
     });
   }
+
+  get address() { return this.server?.address(); }
 
   /**
    * Handle incoming request
@@ -367,7 +371,7 @@ export class ApiServer {
       version: VERSION,
       uptime: Date.now() - this.startTime,
       checks: {
-        templates: true,
+        templates: listTemplates().length > 0,
         audit: this.auditTrail.isEnabled(),
       },
     };
@@ -377,7 +381,10 @@ export class ApiServer {
   private handleListTemplates(_req: ApiRequest, res: ApiResponseWriter): void {
     const templates = this.templateEngine.listTemplates();
     const response: TemplateListResponse = {
-      templates: templates.map(t => ({
+      templates: [...listTemplates().map(t => ({
+        id: t.id, name: t.name, description: t.description, version: VERSION,
+        category: t.category, scope: 'comprehensive' as const,
+      })), ...templates.map(t => ({
         id: t.meta.id,
         name: t.meta.name,
         description: t.meta.description,
@@ -386,14 +393,19 @@ export class ApiServer {
         scope: t.meta.scope,
         author: t.meta.author,
         tags: t.meta.tags,
-      })),
-      total: templates.length,
+      }))],
+      total: listTemplates().length + templates.length,
     };
     res.json({ success: true, data: response });
   }
 
   private handleGetTemplate(req: ApiRequest, res: ApiResponseWriter): void {
     const { id } = req.params;
+    const canonical = TEMPLATE_BY_ID.get(id);
+    if (canonical) {
+      res.json({ success: true, data: { template: canonical } });
+      return;
+    }
     const template = this.templateEngine.getTemplate(id);
 
     if (!template) {
@@ -419,6 +431,11 @@ export class ApiServer {
       return;
     }
 
+    if (TEMPLATE_BY_ID.has(template.meta.id)) {
+      res.status(409).json({ success: false, error: { code: 'CANONICAL_TEMPLATE', message: 'Custom templates cannot replace the canonical catalog' } });
+      return;
+    }
+
     this.templateEngine.registerTemplate(template);
     res.status(201).json({ success: true, data: { template } });
   }
@@ -426,6 +443,16 @@ export class ApiServer {
   private handleGenerate(req: ApiRequest, res: ApiResponseWriter): void {
     const startTime = Date.now();
     const { templateId, variables, format } = req.body as GenerateRequest;
+
+    if (TEMPLATE_BY_ID.has(templateId)) {
+      try {
+        const doc = generateDocument(templateId, { scope: 'comprehensive', audience: 'enterprise', ...variables } as TemplateContext);
+        res.json({ success: true, data: { content: doc.content, metadata: doc.metadata, receipt: doc.receipt } });
+      } catch (error) {
+        res.status(400).json({ success: false, error: { code: 'INVALID_CONTEXT', message: error instanceof Error ? error.message : String(error) } });
+      }
+      return;
+    }
 
     const template = this.templateEngine.getTemplate(templateId);
     if (!template) {
@@ -530,18 +557,15 @@ export class ApiServer {
   }
 
   private handleListWebhooks(_req: ApiRequest, res: ApiResponseWriter): void {
-    // Placeholder - webhooks stored elsewhere
-    res.json({ success: true, data: { webhooks: [], total: 0 } });
+    res.status(501).json({ success: false, error: { code: 'NOT_IMPLEMENTED', message: 'Webhook registration is not supported' } });
   }
 
   private handleCreateWebhook(req: ApiRequest, res: ApiResponseWriter): void {
-    // Placeholder
-    res.status(201).json({ success: true, data: { webhook: req.body } });
+    this.handleListWebhooks(req, res);
   }
 
   private handleDeleteWebhook(req: ApiRequest, res: ApiResponseWriter): void {
-    // Placeholder
-    res.json({ success: true, data: { deleted: req.params.id } });
+    this.handleListWebhooks(req, res);
   }
 }
 

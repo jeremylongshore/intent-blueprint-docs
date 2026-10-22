@@ -1,3 +1,4 @@
+import { parseTaskRecords } from '../tasks.js';
 /**
  * GitHub Exporter
  * Converts Blueprint documents to GitHub artifacts (issues, milestones, templates)
@@ -149,14 +150,7 @@ export class GitHubExporter {
     const tasks: TaskBreakdown[] = [];
 
     for (const doc of documents) {
-      // Look for task-related documents
-      if (
-        doc.name.toLowerCase().includes('task') ||
-        doc.name.toLowerCase().includes('user stor')
-      ) {
-        const extracted = this.parseTasksFromMarkdown(doc.content, doc.category);
-        tasks.push(...extracted);
-      }
+      tasks.push(...this.parseTasksFromMarkdown(doc.content, doc.category));
     }
 
     return tasks;
@@ -166,90 +160,10 @@ export class GitHubExporter {
    * Parse tasks from markdown content
    */
   private parseTasksFromMarkdown(content: string, category: string): TaskBreakdown[] {
-    const tasks: TaskBreakdown[] = [];
-    const lines = content.split('\n');
-
-    let currentTask: Partial<TaskBreakdown> | null = null;
-    let inAcceptanceCriteria = false;
-
-    for (const line of lines) {
-      // Detect task headers (## or ### followed by task-like content)
-      const headerMatch = line.match(/^#{2,3}\s+(.+)$/);
-      if (headerMatch) {
-        // Save previous task
-        if (currentTask && currentTask.title) {
-          tasks.push({
-            title: currentTask.title,
-            description: currentTask.description || '',
-            priority: currentTask.priority || 'medium',
-            category,
-            estimatedHours: currentTask.estimatedHours,
-            dependencies: currentTask.dependencies,
-            acceptanceCriteria: currentTask.acceptanceCriteria,
-          });
-        }
-
-        const title = headerMatch[1].trim();
-        // Skip generic headers
-        if (!title.match(/^(overview|introduction|summary|description|acceptance|criteria)/i)) {
-          currentTask = { title, description: '', acceptanceCriteria: [] };
-          inAcceptanceCriteria = false;
-        }
-        continue;
-      }
-
-      // Detect acceptance criteria section
-      if (line.match(/acceptance\s+criteria/i)) {
-        inAcceptanceCriteria = true;
-        continue;
-      }
-
-      // Parse checkbox items as acceptance criteria or tasks
-      const checkboxMatch = line.match(/^[-*]\s+\[[ x]\]\s+(.+)$/i);
-      if (checkboxMatch && currentTask) {
-        if (inAcceptanceCriteria) {
-          currentTask.acceptanceCriteria = currentTask.acceptanceCriteria || [];
-          currentTask.acceptanceCriteria.push(checkboxMatch[1].trim());
-        }
-        continue;
-      }
-
-      // Parse priority from content
-      if (currentTask && line.match(/priority[:\s]+(critical|high|medium|low)/i)) {
-        const match = line.match(/priority[:\s]+(critical|high|medium|low)/i);
-        if (match) {
-          currentTask.priority = match[1].toLowerCase() as TaskBreakdown['priority'];
-        }
-      }
-
-      // Parse estimate from content
-      if (currentTask && line.match(/estimate[d]?[:\s]+(\d+)/i)) {
-        const match = line.match(/estimate[d]?[:\s]+(\d+)/i);
-        if (match) {
-          currentTask.estimatedHours = parseInt(match[1], 10);
-        }
-      }
-
-      // Add to description
-      if (currentTask && line.trim() && !line.startsWith('#')) {
-        currentTask.description = (currentTask.description || '') + line + '\n';
-      }
-    }
-
-    // Don't forget the last task
-    if (currentTask && currentTask.title) {
-      tasks.push({
-        title: currentTask.title,
-        description: currentTask.description || '',
-        priority: currentTask.priority || 'medium',
-        category,
-        estimatedHours: currentTask.estimatedHours,
-        dependencies: currentTask.dependencies,
-        acceptanceCriteria: currentTask.acceptanceCriteria,
-      });
-    }
-
-    return tasks;
+    return parseTaskRecords(content).map(task => ({
+      title: task.title, description: task.description, priority: task.priority,
+      category, acceptanceCriteria: task.acceptanceCriteria,
+    }));
   }
 
   /**

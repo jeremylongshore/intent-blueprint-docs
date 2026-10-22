@@ -1,0 +1,45 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "blueprint-docs",
+  "version": "3.0.0",
+  "description": "Model-neutral, evidence-backed product and engineering documentation workflows",
+  "author": {
+    "name": "Intent Solutions",
+    "email": "jeremy@intentsolutions.io",
+    "url": "https://github.com/jeremylongshore"
+  },
+  "homepage": "https://github.com/jeremylongshore/intent-blueprint-docs",
+  "repository": "https://github.com/jeremylongshore/intent-blueprint-docs",
+  "license": "Apache-2.0",
+  "keywords": [
+    "documentation",
+    "agent-skills",
+    "mcp",
+    "prd",
+    "architecture"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Blueprint Docs",
+        "shortDescription": "Enterprise project docs",
+        "longDescription": "Portable documentation workflows, deterministic workbooks, and review agents for product and engineering teams.",
+        "developerName": "intentsolutions.io LLC",
+        "category": "Productivity",
+        "capabilities": [
+          "Interactive",
+          "Write"
+        ],
+        "websiteURL": "https://github.com/jeremylongshore/intent-blueprint-docs",
+        "defaultPrompt": [
+          "Build the right documentation set for this project.",
+          "Review these docs for evidence and traceability gaps.",
+          "Create a release-readiness evidence plan."
+        ],
+        "brandColor": "#2457D6",
+        "logo": "./assets/blueprint-icon.svg",
+        "composerIcon": "./assets/blueprint-icon.svg"
+      }
+    }
+  }
+}

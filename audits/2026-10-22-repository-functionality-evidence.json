@@ -1,0 +1,439 @@
+{
+  "observed_at_utc": "2026-10-22",
+  "observed_local_date": "2026-10-21",
+  "source_commit": "1c5913bb18be8a908b08018f28978b486308024e",
+  "audit_bead": "blueprint-44b",
+  "runtime": {
+    "node": "22.23.1",
+    "npm": "12.0.1"
+  },
+  "clean_install": {
+    "command": "npm ci --ignore-scripts --no-audit --no-fund",
+    "exit_code": 0,
+    "source": "git archive HEAD into temporary directory"
+  },
+  "checks": [
+    {
+      "command": "npm test before build",
+      "exit_code": 1,
+      "root_passed": 190,
+      "root_failed": 2,
+      "skipped": 3,
+      "failure": "packed artifact tests require dist"
+    },
+    {
+      "command": "npm run build",
+      "exit_code": 0,
+      "workspaces": 2
+    },
+    {
+      "command": "npm test after build",
+      "exit_code": 0,
+      "root_passed": 192,
+      "cli_passed": 30,
+      "skipped": 3,
+      "chatbot_test_files": 0
+    },
+    {
+      "command": "npm run lint",
+      "exit_code": 0
+    },
+    {
+      "command": "npm run verify",
+      "exit_code": 0
+    },
+    {
+      "command": "npm run skill:check",
+      "exit_code": 0
+    },
+    {
+      "command": "audit-harness verify with clean locked 1.4.0",
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/smoke-packed-artifact.mjs with actual tarball consumer",
+      "exit_code": 0,
+      "templates": 22,
+      "cli_version": "3.0.0",
+      "mcp_tools": 4
+    },
+    {
+      "command": "node scripts/run-enterprise.mjs --project <audit-project> --answers .github/fixtures/enterprise_answers.ci.txt",
+      "exit_code": 0,
+      "markdown_files": 24
+    },
+    {
+      "command": "node form-system/test-form.js",
+      "exit_code": 0
+    }
+  ],
+  "registry": {
+    "package": "@intentsolutions/blueprint",
+    "latest": "2.8.0",
+    "version_3_0_0": "E404",
+    "remote_v3_tag_present": false
+  },
+  "historical_release_blocker": {
+    "pr": 45,
+    "merged": true,
+    "merged_at": "2026-09-25T22:21:53Z",
+    "merge_commit": "4f32cfb0bbdc5788e7c7a1c713f261b36a67513f"
+  },
+  "reproductions": {
+    "enterprise_distinct_intakes": {
+      "identical_prd_bodies_excluding_header": true,
+      "schema_frontmatter_present": false,
+      "distinctive_requirement_present": false
+    },
+    "github_export_preview": {
+      "input_documents": 22,
+      "proposed_tasks": 47,
+      "first_titles": [
+        "How to use this workbook",
+        "Project context",
+        "Evidence",
+        "Assumptions",
+        "Known unknowns"
+      ],
+      "external_writes": 0
+    },
+    "invalid_cli_scope": {
+      "scope": "nonsense",
+      "exit_code": 0,
+      "documents_generated": 0,
+      "index_written": true
+    },
+    "rest_default": {
+      "health_status": "healthy",
+      "template_count": 0,
+      "webhook_create_status": 201,
+      "webhook_count_after_create": 0
+    },
+    "cli_pack_command": {
+      "registered": false
+    },
+    "interview_group_snapshot": {
+      "initial_compliance_active": false,
+      "after_enterprise_answers_compliance_active": true,
+      "cli_reloads_groups": false
+    }
+  },
+  "production_dependency_audit": {
+    "command": "npm audit --omit=dev --json",
+    "scope": "clean lockfile root workspace installation",
+    "vulnerability_counts": {
+      "info": 0,
+      "low": 0,
+      "moderate": 2,
+      "high": 6,
+      "critical": 2,
+      "total": 10
+    },
+    "affected_packages": [
+      {
+        "name": "@modelcontextprotocol/sdk",
+        "severity": "high",
+        "direct": true,
+        "range": "<=1.31.0",
+        "fix_available": true,
+        "advisories": [
+          {
+            "title": "MCP TypeScript SDK: OAuth client could send credentials to an authorization server chosen by the MCP server",
+            "url": "https://github.com/advisories/GHSA-6qxp-vccf-f47h",
+            "range": ">=1.12.0 <1.31.0"
+          },
+          {
+            "title": "MCP TypeScript SDK: Experimental tasks were not tied to the session that created them",
+            "url": "https://github.com/advisories/GHSA-22jm-h49p-29qw",
+            "range": ">=1.24.0 <1.32.0"
+          },
+          {
+            "title": "MCP TypeScript client SDK: HTTP client transports and OAuth requests followed cross-origin redirects and re-sent custom headers and request bodies",
+            "url": "https://github.com/advisories/GHSA-6prh-2h8m-c8cw",
+            "range": "<1.32.0"
+          },
+          {
+            "title": "MCP TypeScript SDK: One HTTP request within the default size limit could exhaust server memory during validation",
+            "url": "https://github.com/advisories/GHSA-46jr-4wx8-v453",
+            "range": ">=1.3.0 <1.32.0"
+          },
+          {
+            "title": "MCP TypeScript SDK: Server bearer authentication accepted tokens issued for another service",
+            "url": "https://github.com/advisories/GHSA-rvq5-wwqv-78pq",
+            "range": ">=1.6.0 <1.32.0"
+          }
+        ]
+      },
+      {
+        "name": "brace-expansion",
+        "severity": "high",
+        "direct": false,
+        "range": "2.0.0 - 2.1.6",
+        "fix_available": true,
+        "advisories": [
+          {
+            "title": "brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service",
+            "url": "https://github.com/advisories/GHSA-q2hr-2g5m-vwhr",
+            "range": ">=2.0.0 <2.1.7"
+          },
+          {
+            "title": "brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion",
+            "url": "https://github.com/advisories/GHSA-qhr7-859c-m2p7",
+            "range": ">=2.0.0 <2.1.6"
+          },
+          {
+            "title": "brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion",
+            "url": "https://github.com/advisories/GHSA-6j4f-fj2g-mc7p",
+            "range": ">=2.0.0 <2.1.5"
+          }
+        ]
+      },
+      {
+        "name": "fast-uri",
+        "severity": "high",
+        "direct": false,
+        "range": "3.0.0 - 3.1.7",
+        "fix_available": true,
+        "advisories": [
+          {
+            "title": "fast-uri vulnerable to authority injection via an unvalidated port in serialize",
+            "url": "https://github.com/advisories/GHSA-qw65-cvwx-89v3",
+            "range": ">=3.0.0 <3.1.7"
+          },
+          {
+            "title": "fast-uri vulnerable to host confusion via an unclosed bracket in the URI authority",
+            "url": "https://github.com/advisories/GHSA-58mr-gqgx-xq4g",
+            "range": "=3.1.6"
+          },
+          {
+            "title": "fast-uri vulnerable to inconsistent host case normalization via percent-encoded octets",
+            "url": "https://github.com/advisories/GHSA-hrr3-gc8f-f4qj",
+            "range": ">=3.0.0 <3.1.8"
+          }
+        ]
+      },
+      {
+        "name": "follow-redirects",
+        "severity": "high",
+        "direct": false,
+        "range": "1.16.0",
+        "fix_available": true,
+        "advisories": [
+          {
+            "title": "follow-redirects array-form headers bypass cross-origin credential stripping",
+            "url": "https://github.com/advisories/GHSA-q3jh-wrc6-jgq8",
+            "range": ">=1.16.0 <1.16.1"
+          },
+          {
+            "title": "follow-redirects sensitiveHeaders regex escaping can expose credential headers",
+            "url": "https://github.com/advisories/GHSA-8r9p-f939-6h3c",
+            "range": ">=1.16.0 <1.16.1"
+          }
+        ]
+      },
+      {
+        "name": "handlebars",
+        "severity": "critical",
+        "direct": true,
+        "range": "3.0.0 - 4.7.9",
+        "fix_available": true,
+        "advisories": [
+          {
+            "title": "Handlebars: JavaScript Injection via Unsafe Inline Embedding of Precompiled Templates",
+            "url": "https://github.com/advisories/GHSA-xw65-4hp5-5hc7",
+            "range": ">=4.0.0 <=4.7.9"
+          },
+          {
+            "title": "Handlebars: JavaScript Injection via AST Type Confusion in compile (bypass of CVE-2026-33937)",
+            "url": "https://github.com/advisories/GHSA-8r5x-fm3f-whwj",
+            "range": ">=4.0.0 <=4.7.9"
+          },
+          {
+            "title": "Handlebars: JavaScript Injection via Own Property Check Bypass",
+            "url": "https://github.com/advisories/GHSA-p8wg-vrv2-v86f",
+            "range": ">=3.0.0 <=4.7.9"
+          }
+        ]
+      },
+      {
+        "name": "hono",
+        "severity": "moderate",
+        "direct": false,
+        "range": "<=4.13.10",
+        "fix_available": true,
+        "advisories": [
+          {
+            "title": "hono/jsx renders plain strings unescaped in boundary components, leading to XSS",
+            "url": "https://github.com/advisories/GHSA-hxh3-vqpv-xpqv",
+            "range": "<4.13.7"
+          },
+          {
+            "title": "Hono: `serveStatic` decodes the request path a second time, leading to bypass of middleware on static paths",
+            "url": "https://github.com/advisories/GHSA-5r4p-p66f-jhc7",
+            "range": ">=4.12.4 <4.13.11"
+          }
+        ]
+      },
+      {
+        "name": "ip-address",
+        "severity": "moderate",
+        "direct": false,
+        "range": "<=10.7.0",
+        "fix_available": true,
+        "advisories": [
+          {
+            "title": "ip-address: Address6.isLinkLocal() recognizes fe80::/64 rather than fe80::/10, allowing SSRF and trust-boundary bypass to on-link hosts",
+            "url": "https://github.com/advisories/GHSA-rpw4-54j3-4h4q",
+            "range": "<=10.5.0"
+          },
+          {
+            "title": "ip-address: no classifier recognizes the NAT64 local-use range 64:ff9b:1::/48, allowing SSRF and trust-boundary bypass",
+            "url": "https://github.com/advisories/GHSA-2vr4-cq9g-pvrc",
+            "range": ">=10.2.0 <=10.5.0"
+          },
+          {
+            "title": "ip-address: isInSubnet() and isHostInSubnet() compare addresses of different families as if they shared an address space, allowing an allowlist check to admit an address outside its range",
+            "url": "https://github.com/advisories/GHSA-j6r3-76f7-8jcv",
+            "range": "<=10.7.0"
+          },
+          {
+            "title": "ip-address: Address6 builds a parse diagnostic proportional to the input with no length bound, allowing a single long string to stall or crash the process",
+            "url": "https://github.com/advisories/GHSA-h3mg-xc3c-68pw",
+            "range": "<=10.7.0"
+          }
+        ]
+      },
+      {
+        "name": "nodemailer",
+        "severity": "high",
+        "direct": true,
+        "range": "<=10.0.8",
+        "fix_available": {
+          "name": "nodemailer",
+          "version": "10.2.0",
+          "isSemVerMajor": true
+        },
+        "advisories": [
+          {
+            "title": "Nodemailer: Process-global DNS cache reuses TLS `servername` across transports, enabling cross-tenant SMTP credential disclosure",
+            "url": "https://github.com/advisories/GHSA-6vj9-mwq6-2f5v",
+            "range": ">=5.0.0 <10.0.2"
+          },
+          {
+            "title": "Nodemailer: Nested structured recipient arrays bypass the parser depth limit and cause stack exhaustion DoS",
+            "url": "https://github.com/advisories/GHSA-8vvx-rff5-p5rq",
+            "range": "<10.0.2"
+          },
+          {
+            "title": "Nodemailer: Quoted local-part can produce malformed envelope recipient through RFC 5322 comment parsing",
+            "url": "https://github.com/advisories/GHSA-g57g-f23g-4646",
+            "range": ">=9.1.0 <10.0.9"
+          },
+          {
+            "title": "Nodemailer: Quadratic backtracking in the addressparser free-text fallback allows remote denial of service",
+            "url": "https://github.com/advisories/GHSA-v53p-9fqp-m79j",
+            "range": "<=10.0.5"
+          },
+          {
+            "title": "Nodemailer addressparser: O(n^2) on comment-joined addresses enables a remote DoS (reachable via mailparser)",
+            "url": "https://github.com/advisories/GHSA-prgh-xp8r-p3m5",
+            "range": ">=9.1.0 <=10.0.4"
+          }
+        ]
+      },
+      {
+        "name": "proxy-addr",
+        "severity": "critical",
+        "direct": false,
+        "range": "1.1.0 - 2.0.7",
+        "fix_available": true,
+        "advisories": [
+          {
+            "title": "proxy-addr vulnerable to IP spoofing via IPv4-mapped IPv6 trust subnet",
+            "url": "https://github.com/advisories/GHSA-jqcg-44mw-7w3h",
+            "range": ">=1.1.0 <2.0.8"
+          }
+        ]
+      },
+      {
+        "name": "undici",
+        "severity": "high",
+        "direct": false,
+        "range": "8.0.0 - 8.10.1",
+        "fix_available": true,
+        "advisories": [
+          {
+            "title": "undici vulnerable to Denial of Service via unhandled error in WebSocket permessage-deflate decompression",
+            "url": "https://github.com/advisories/GHSA-3wwx-pv8p-q78v",
+            "range": ">=8.1.0 <8.10.2"
+          },
+          {
+            "title": "undici vulnerable to Denial of Service via orphaned RetryHandler response body",
+            "url": "https://github.com/advisories/GHSA-pmjh-fq2x-6v4x",
+            "range": ">=8.0.0 <8.10.2"
+          },
+          {
+            "title": "undici vulnerable to downstream response splitting via retry interceptor",
+            "url": "https://github.com/advisories/GHSA-r53p-7pc4-xj5r",
+            "range": ">=8.0.0 <8.10.2"
+          },
+          {
+            "title": "undici vulnerable to Denial of Service via unrequested WebSocket subprotocol",
+            "url": "https://github.com/advisories/GHSA-rfgv-xxqx-mfg5",
+            "range": ">=8.0.0 <8.10.2"
+          },
+          {
+            "title": "undici vulnerable to Denial of Service via unbounded decompression of compressed responses",
+            "url": "https://github.com/advisories/GHSA-3xpg-4rpp-hhhm",
+            "range": ">=8.0.0 <8.10.2"
+          },
+          {
+            "title": "undici vulnerable to cross-user cookie disclosure via Set-Cookie caching in shared caches",
+            "url": "https://github.com/advisories/GHSA-2jfj-6hjv-fm6j",
+            "range": ">=8.0.0 <8.10.2"
+          },
+          {
+            "title": "undici vulnerable to response truncation via oversized chunked responses in the dump interceptor",
+            "url": "https://github.com/advisories/GHSA-2gqq-gqf2-x968",
+            "range": ">=8.0.0 <8.10.2"
+          },
+          {
+            "title": "undici vulnerable to TLS certificate validation bypass via dropped connect options in BalancedPool",
+            "url": "https://github.com/advisories/GHSA-w293-vg96-wgc3",
+            "range": ">=8.0.0 <8.10.2"
+          },
+          {
+            "title": "undici vulnerable to caching and replay of unsafe HTTP method responses",
+            "url": "https://github.com/advisories/GHSA-8436-99hf-9mmv",
+            "range": ">=8.0.0 <8.10.2"
+          },
+          {
+            "title": "undici vulnerable to cross-origin cache poisoning via missing origin isolation in interceptors",
+            "url": "https://github.com/advisories/GHSA-vp8m-p9jh-q5pm",
+            "range": ">=8.10.0 <8.10.2"
+          },
+          {
+            "title": "undici vulnerable to Denial of Service via WebSocketStream unclean close",
+            "url": "https://github.com/advisories/GHSA-rx4f-c7p8-82vq",
+            "range": ">=8.0.0 <8.10.2"
+          }
+        ]
+      }
+    ],
+    "exploitability_tested": false
+  },
+  "follow_up_beads": [
+    "blueprint-owe",
+    "blueprint-2t8",
+    "blueprint-828",
+    "blueprint-1jr",
+    "blueprint-gbb",
+    "blueprint-vdh"
+  ],
+  "limits": [
+    "Only Node 22 executed",
+    "No authenticated exports, bot messages, email sends, model calls, or release publication",
+    "PDF generation not executed",
+    "No numeric code coverage measurement"
+  ]
+}

@@ -5,7 +5,7 @@
 
 import Handlebars from 'handlebars';
 import { readFileSync, existsSync, mkdirSync, writeFileSync } from 'fs';
-import { join, dirname } from 'path';
+import { join, dirname, basename } from 'path';
 import { fileURLToPath } from 'url';
 import { TEMPLATE_DEFINITIONS, validateTemplateCatalog } from './catalog.js';
 import { renderSchemaBlueprint } from './renderer.js';
@@ -109,6 +109,7 @@ function resolveTemplate(templateName: string): TemplateInfo {
  * Get templates for a specific scope
  */
 export function getTemplatesForScope(scope: 'mvp' | 'standard' | 'comprehensive'): TemplateInfo[] {
+  if (!SCOPES.includes(scope)) throw new Error(`Invalid scope: ${scope}. Choose ${SCOPES.join(', ')}.`);
   const allowed = new Set(TEMPLATE_DEFINITIONS.filter(item => item.scopes.includes(scope)).map(item => item.id));
   return listTemplates().filter(item => allowed.has(item.id));
 }
@@ -135,6 +136,8 @@ export function compileTemplate(templateName: string, generatedAt?: string): Han
  * Generate a single document from a template
  */
 export function generateDocument(templateName: string, context: TemplateContext): GeneratedDocument {
+  if (!SCOPES.includes(context.scope)) throw new Error(`Invalid scope: ${context.scope}`);
+  if (!AUDIENCES.includes(context.audience)) throw new Error(`Invalid audience: ${context.audience}`);
   const info = resolveTemplate(templateName);
   const safeProjectName = context.projectName
     .toLowerCase()
@@ -173,7 +176,24 @@ export function generateAllDocuments(context: TemplateContext): GeneratedDocumen
 /**
  * Write generated documents to disk
  */
-export function writeDocuments(documents: GeneratedDocument[], outputDir: string): string[] {
+export function writeDocuments(
+  documents: GeneratedDocument[], outputDir: string, options: { overwrite?: boolean } = {},
+): string[] {
+  if (!documents.length) throw new Error('No documents to write');
+  const destinations = new Set<string>(['index.md']);
+  for (const doc of documents) {
+    if (!doc.filename || doc.filename !== basename(doc.filename) || !doc.filename.endsWith('.md')) {
+      throw new Error(`Invalid document filename: ${doc.filename}`);
+    }
+    if (destinations.has(doc.filename)) throw new Error(`Duplicate document filename: ${doc.filename}`);
+    destinations.add(doc.filename);
+    if (doc.receipt) destinations.add(`.metadata/receipts/${doc.filename}.json`);
+  }
+  if (options.overwrite === false) {
+    for (const filename of destinations) {
+      if (existsSync(join(outputDir, filename))) throw new Error(`Output already exists: ${filename}. Use --force to overwrite.`);
+    }
+  }
   if (!existsSync(outputDir)) {
     mkdirSync(outputDir, { recursive: true });
   }
@@ -184,9 +204,16 @@ export function writeDocuments(documents: GeneratedDocument[], outputDir: string
     const filePath = join(outputDir, doc.filename);
     writeFileSync(filePath, doc.content);
     writtenFiles.push(filePath);
+    if (doc.receipt) {
+      const receiptDir = join(outputDir, '.metadata', 'receipts');
+      mkdirSync(receiptDir, { recursive: true });
+      const receiptPath = join(receiptDir, `${doc.filename}.json`);
+      writeFileSync(receiptPath, JSON.stringify(doc.receipt, null, 2) + '\n');
+      writtenFiles.push(receiptPath);
+    }
   }
 
-  const indexContent = `# ${documents[0]?.filename.split('-')[0] || 'Project'} Documentation
+  const indexContent = `# Project Documentation
 
 Generated: ${new Date().toISOString()}
 

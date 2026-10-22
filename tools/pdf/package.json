@@ -1,5 +1,5 @@
 {
-  "dependencies": {
-    "md-to-pdf": "^5.2.5"
-  }
+  "name": "@intentsolutions/blueprint-pdf-tools",
+  "private": true,
+  "description": "Pandoc and LaTeX template export helpers; md-to-pdf is not used by this tool"
 }

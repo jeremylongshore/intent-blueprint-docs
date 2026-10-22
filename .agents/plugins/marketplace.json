@@ -1,0 +1,20 @@
+{
+  "name": "intent-blueprint",
+  "interface": {
+    "displayName": "Intent Blueprint"
+  },
+  "plugins": [
+    {
+      "name": "blueprint-docs",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

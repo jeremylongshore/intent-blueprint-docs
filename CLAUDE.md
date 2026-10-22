@@ -112,7 +112,7 @@ Follow steps 2-4 in `.cursorrules/` for structured workflow.
 
 1. **Templates are READ-ONLY** - Never modify `professional-templates/` files
 2. **Follow directory standards** - Use `.directory-standards.md` for naming (`NNN-abv-description.ext`)
-3. **Store docs in 01-Docs/** - All documentation goes there
+3. **Store docs in 000-docs/** - Canonical documentation goes there; 01-Docs/ is historical
 4. **Generated docs go to completed-docs/** - Not in professional-templates/
 5. **Regenerate after editing .tmpl** - Run `make gen-skills` after modifying any `.md.tmpl` or shared block
 
@@ -120,7 +120,7 @@ Follow steps 2-4 in `.cursorrules/` for structured workflow.
 
 - **22 templates** in `professional-templates/` with `{{DATE}}` placeholders for dynamic date insertion
 - **Model-neutral host support** - Portable Agent Skill plus thin Claude Code, Codex, Cursor, Gemini, CLI, and MCP adapters
-- **Enterprise E2E** validated via GitHub Actions
+- **Enterprise E2E** validates canonical output, supplied evidence and receipt hashes via GitHub Actions
 - **Node.js required** for form-system and enterprise scripts
 - **Monorepo** with workspaces in `packages/` (cli, chatbots)
 

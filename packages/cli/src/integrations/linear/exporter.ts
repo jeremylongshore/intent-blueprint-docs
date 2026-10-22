@@ -1,3 +1,4 @@
+import { parseTaskRecords } from '../tasks.js';
 /**
  * Linear Exporter
  * High-level export operations for Blueprint documents to Linear
@@ -255,23 +256,6 @@ export class LinearExporter {
       }
     }
 
-    // If no phases found, create default phases
-    if (phases.length === 0) {
-      const now = new Date();
-      phases.push(
-        {
-          name: 'Phase 1 - Foundation',
-          startDate: now.toISOString(),
-          endDate: new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-        },
-        {
-          name: 'Phase 2 - Core Features',
-          startDate: new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-          endDate: new Date(now.getTime() + 28 * 24 * 60 * 60 * 1000).toISOString(),
-        }
-      );
-    }
-
     return phases;
   }
 
@@ -303,70 +287,10 @@ export class LinearExporter {
    * Parse tasks from markdown content
    */
   private parseTasksFromMarkdown(content: string): LinearTaskItem[] {
-    const tasks: LinearTaskItem[] = [];
-    const lines = content.split('\n');
-    let currentTask: LinearTaskItem | null = null;
-
-    for (const line of lines) {
-      // Match task items: - [ ] Task or * [ ] Task or - Task
-      const taskMatch = line.match(/^[\s]*[-*]\s*(?:\[[ x]\])?\s*(.+)/);
-
-      if (taskMatch) {
-        const taskText = taskMatch[1].trim();
-
-        // Determine indentation level for subtasks
-        const indent = line.match(/^(\s*)/)?.[1].length || 0;
-
-        // Extract priority from markers like [P1], [HIGH], etc.
-        const priority = this.extractPriority(taskText);
-
-        // Extract estimate from markers like [2h], [3d], [5pt], etc.
-        const estimate = this.extractEstimate(taskText);
-
-        // Extract labels from markers like [feature], [bug], etc.
-        const labels = this.extractLabels(taskText);
-
-        // Clean task title
-        const title = this.cleanTaskTitle(taskText);
-
-        if (indent < 4 && title.length > 3) {
-          // Top-level task
-          currentTask = {
-            title,
-            priority,
-            estimate,
-            labels,
-            subtasks: [],
-          };
-          tasks.push(currentTask);
-        } else if (currentTask && indent >= 4 && title.length > 3) {
-          // Subtask
-          currentTask.subtasks = currentTask.subtasks || [];
-          currentTask.subtasks.push({
-            title,
-            priority,
-            estimate,
-          });
-        }
-      }
-    }
-
-    // Also look for numbered lists
-    const numberedRegex = /^\d+\.\s+(.+)/gm;
-    let match;
-    while ((match = numberedRegex.exec(content)) !== null) {
-      const taskText = match[1].trim();
-      if (taskText.length > 3 && !tasks.some(t => t.title === taskText)) {
-        tasks.push({
-          title: this.cleanTaskTitle(taskText),
-          priority: this.extractPriority(taskText),
-          estimate: this.extractEstimate(taskText),
-          labels: this.extractLabels(taskText),
-        });
-      }
-    }
-
-    return tasks;
+    return parseTaskRecords(content).map(task => ({
+      title: task.title, description: task.description,
+      priority: task.priority === 'critical' ? 'urgent' : task.priority,
+    }));
   }
 
   /**

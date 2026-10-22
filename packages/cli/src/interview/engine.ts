@@ -232,6 +232,12 @@ export class InterviewEngine {
       features: result.templateContext.features as string[],
       timeline: result.templateContext.timeline as string,
       team: result.templateContext.teamSize as string,
+      evidence: Object.entries(result.answers).map(([key, value], index) => ({
+        id: `E-INTERVIEW-${index + 1}`, claim: `${key}: ${typeof value === 'string' ? value : JSON.stringify(value)}`,
+        state: 'provided' as const, sourceRefs: [],
+      })),
+      assumptions: result.gaps.assumptions.map(item => `${item.field}: ${item.assumption} (heuristic confidence ${item.confidence}%)`),
+      unknowns: result.gaps.missingRecommended,
     };
   }
 }

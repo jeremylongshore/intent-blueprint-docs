@@ -12,7 +12,7 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "clean": "rm -rf dist",
-    "test": "vitest --passWithNoTests",
+    "test": "vitest run",
     "start:slack": "node dist/slack/app.js",
     "start:discord": "node dist/discord/app.js"
   },
@@ -34,15 +34,15 @@
     "@intentsolutions/blueprint": "*",
     "@slack/bolt": "^3.17.0",
     "discord.js": "^14.18.0",
-    "nodemailer": "^9.1.1",
+    "nodemailer": "^10.2.0",
     "archiver": "^6.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "@types/nodemailer": "^8.0.1",
+    "@types/nodemailer": "^8.0.2",
     "@types/archiver": "^6.0.0",
     "typescript": "^5.3.0",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.12"
   },
   "engines": {
     "node": ">=20.0.0"

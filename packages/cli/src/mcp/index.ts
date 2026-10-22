@@ -21,6 +21,8 @@ import {
   writeDocuments,
   getTemplatesForScope,
   type TemplateContext,
+  EvidenceItemSchema,
+  TraceGraphSchema,
 } from '../core/index.js';
 import {
   InterviewEngine,
@@ -38,6 +40,14 @@ const GenerateSchema = z.object({
   writeFiles: z.boolean().default(false),
   projectType: z.string().optional(),
   techStack: z.array(z.string()).optional(),
+  evidence: z.array(z.union([z.string(), EvidenceItemSchema])).optional(),
+  sourceRefs: z.array(z.string()).optional(),
+  sourceHashes: z.record(z.string()).optional(),
+  assumptions: z.array(z.string()).optional(),
+  unknowns: z.array(z.string()).optional(),
+  owner: z.string().optional(),
+  reviewers: z.array(z.string()).optional(),
+  traceGraph: TraceGraphSchema.optional(),
 });
 
 const InterviewSchema = z.object({
@@ -72,6 +82,14 @@ const TOOLS: Tool[] = [
         writeFiles: { type: 'boolean', default: false, description: 'Explicitly write rendered workbooks to disk' },
         projectType: { type: 'string' },
         techStack: { type: 'array', items: { type: 'string' } },
+        evidence: { type: 'array', items: { anyOf: [{ type: 'string' }, { type: 'object' }] } },
+        sourceRefs: { type: 'array', items: { type: 'string' } },
+        sourceHashes: { type: 'object', additionalProperties: { type: 'string' } },
+        assumptions: { type: 'array', items: { type: 'string' } },
+        unknowns: { type: 'array', items: { type: 'string' } },
+        owner: { type: 'string' },
+        reviewers: { type: 'array', items: { type: 'string' } },
+        traceGraph: { type: 'object', description: 'Governed lifecycle nodes and edges; validated by the core schema' },
       },
       required: ['projectName', 'projectDescription'],
     },
@@ -136,6 +154,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         audience: input.audience,
         projectType: input.projectType,
         techStack: input.techStack,
+        evidence: input.evidence,
+        sourceRefs: input.sourceRefs,
+        sourceHashes: input.sourceHashes,
+        assumptions: input.assumptions,
+        unknowns: input.unknowns,
+        owner: input.owner,
+        reviewers: input.reviewers,
+        traceGraph: input.traceGraph,
       };
 
       const docs = generateAllDocuments(context);

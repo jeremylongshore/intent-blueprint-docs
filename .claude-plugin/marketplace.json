@@ -1,0 +1,18 @@
+{
+  "name": "intent-blueprint",
+  "owner": {
+    "name": "intentsolutions.io LLC",
+    "email": "jeremy@intentsolutions.io"
+  },
+  "plugins": [
+    {
+      "name": "blueprint-docs",
+      "source": "./",
+      "description": "Evidence-backed enterprise project documentation",
+      "version": "3.0.0"
+    }
+  ],
+  "metadata": {
+    "description": "Evidence-backed enterprise project documentation"
+  }
+}

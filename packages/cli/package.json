@@ -33,7 +33,7 @@
     "prepack": "node ../../scripts/sync-templates.mjs --check >/dev/null",
     "dev": "tsc --watch",
     "clean": "rm -rf dist",
-    "test": "vitest",
+    "test": "vitest run",
     "start": "node dist/cli.js",
     "mcp": "node dist/mcp/index.js"
   },
@@ -55,11 +55,11 @@
     "directory": "packages/cli"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.26.0",
+    "@modelcontextprotocol/sdk": "^1.32.1",
     "@octokit/rest": "^20.0.0",
     "chalk": "^5.3.0",
     "commander": "^12.0.0",
-    "handlebars": "^4.7.9",
+    "handlebars": "^4.7.10",
     "inquirer": "^9.2.0",
     "js-yaml": "^4.1.0",
     "marked": "^12.0.0",
@@ -71,7 +71,7 @@
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.0.0",
     "typescript": "^5.3.0",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.12"
   },
   "engines": {
     "node": ">=20.0.0"

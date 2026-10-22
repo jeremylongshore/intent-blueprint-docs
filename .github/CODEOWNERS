@@ -6,3 +6,10 @@
 /form-system/enterprise-cli.js             @jeremylongshore
 /form-system/enterprise-questions.yaml     @jeremylongshore
 /completed-docs/                           @jeremylongshore
+
+# Real script paths (scripts/ is a compatibility symlink)
+/05-Scripts/run-enterprise.mjs             @jeremylongshore
+/05-Scripts/generate-enterprise.mjs        @jeremylongshore
+/05-Scripts/verify-enterprise-output.mjs   @jeremylongshore
+/05-Scripts/build-plugin.mjs               @jeremylongshore
+/skills/blueprint-docs/                    @jeremylongshore

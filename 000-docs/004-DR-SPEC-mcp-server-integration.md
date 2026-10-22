@@ -8,13 +8,15 @@ The MCP binary and core library are shipped in the same npm package. There is no
 
 ## Configuration
 
+Run `npm ci` and `npm run build` in the source checkout first. The source version is not proof of npm publication; the current repository configuration uses the local built server.
+
 ```json
 {
   "mcpServers": {
     "blueprint-docs": {
       "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "--package", "@intentsolutions/blueprint@3.0.0", "blueprint-mcp"]
+      "command": "node",
+      "args": ["/absolute/path/to/intent-blueprint-docs/packages/cli/dist/mcp/index.js"]
     }
   }
 }

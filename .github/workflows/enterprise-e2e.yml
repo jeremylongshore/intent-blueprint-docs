@@ -12,7 +12,9 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '20' }
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+      - name: Build canonical generator
+        run: npm run build
       - name: Create required directories
         run: mkdir -p completed-docs
       - name: Run enterprise generator (noninteractive)
