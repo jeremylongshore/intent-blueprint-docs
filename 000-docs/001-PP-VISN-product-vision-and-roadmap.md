@@ -29,36 +29,23 @@ Template marketplace, plugin system, and community-contributed template packs fo
 
 **Version:** 3.0.0 (schema-backed workbook release line)
 
-### Completed
-- 22 professional templates with dynamic date placeholders
-- CLI tool (`@intentsolutions/blueprint`)
-- MCP server (`blueprint-mcp` binary in `@intentsolutions/blueprint`)
-- Core library (main export of `@intentsolutions/blueprint`)
-- Portable Agent Skill plus Claude, Codex, Cursor, and Gemini adapters
-- Enterprise pipeline with 17-question intake
-- GitHub Actions CI/CD
-- Template marketplace framework
-- Plugin system architecture
-- Analytics dashboard
+### Maintained workflows
 
-### In Development (Beta)
-- Template pack publishing workflow
-- Web UI for non-technical users
-- Team collaboration features
-- Enhanced export integrations (Linear, Jira, Notion)
+- Portable documentation skill with comprehensive enterprise authoring guidance
+- Canonical 22-workbook engine, library, CLI and four-tool stdio MCP adapter
+- Enterprise intake mapped to provided evidence, source hashes and draft workbooks
+- Generation receipts persisted beside written documents
+- Explicit task/story records for GitHub, Linear and Jira export previews
+- Self-contained skill plugin bundle for Codex, Claude Code and Grok Build
+- CI checks for generation, protocols, packaging and enterprise output integrity
 
-### Planned
-- Slack/Discord bot integration
-- Custom branding per organization
-- Multi-language template support
-- Real-time collaborative editing
+### Experimental surfaces
 
-## Packages
+REST custom-template helpers, live external exports, team configuration, model-provider clients, internal template marketplace, analytics and Slack/Discord delivery code require environment-specific evaluation. Source modules are preserved; their presence is not a claim of a hosted enterprise platform. Bi-directional sync and webhook registration are not supported. There is no shipped graphical collaboration application.
 
-| Package | Description | Status |
-|---------|-------------|--------|
-| `@intentsolutions/blueprint` | CLI, library, templates, and MCP binary | Beta |
-| `@intentsolutions/blueprint-chatbots` | Slack and Discord adapters | Beta |
+### Distribution
+
+The source version is 3.0.0. Use a checkout build or `npm run plugin:build` for current behavior until npm publication is completed through the release workflow. Plugin packaging is separate from approval by a host's directory.
 
 ## Documentation Scopes
 

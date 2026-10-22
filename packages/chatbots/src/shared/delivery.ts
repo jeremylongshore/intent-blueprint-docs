@@ -2,7 +2,7 @@
  * Document delivery via email or file upload
  */
 
-import nodemailer from 'nodemailer';
+import nodemailer, { type Transporter } from 'nodemailer';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -26,7 +26,7 @@ export interface EmailDeliveryResult {
 }
 
 export class DocDelivery {
-  private transporter: nodemailer.Transporter | null = null;
+  private transporter: Transporter | null = null;
   private from: string;
 
   constructor(options: DeliveryOptions = {}) {

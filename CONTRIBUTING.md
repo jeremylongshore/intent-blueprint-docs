@@ -5,9 +5,9 @@ Thank you for your interest in contributing. This guide covers the process for s
 ## Getting Started
 
 ```bash
-git clone https://github.com/intent-solutions-io/intent-blueprint-docs.git
+git clone https://github.com/jeremylongshore/intent-blueprint-docs.git
 cd intent-blueprint-docs
-npm install
+npm ci
 npm run build
 npm run test
 ```
@@ -61,8 +61,8 @@ When modifying templates:
 ## Code Style
 
 - TypeScript with strict mode
-- ESLint + Prettier (enforced by CI)
-- Tests adjacent to source in `__tests__/`
+- Oxlint and TypeScript (enforced by CI)
+- Root checks in `test/`; CLI behavioral checks in `packages/cli/test/`
 
 ## Review Process
 

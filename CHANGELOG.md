@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Enterprise discovery now uses the canonical workbook engine, carries supplied answers and source hashes, persists receipts, and verifies content integrity.
+- CLI interviews reevaluate conditional questions and retain answers as provided evidence; invalid scopes fail before writing files, and clean-checkout tests build their required artifacts.
+- GitHub, Linear and Jira export explicit task/story records instead of workbook headings or ordinary lists; empty workbooks no longer create invented phases.
+- The REST adapter exposes the canonical catalog and draft renderer; unsupported webhook registration returns an error.
+- Repository MCP adapters use the built local server instead of an unpublished npm version; supported and experimental surfaces are documented accurately.
+
+### Added
+
+- A portable enterprise authoring workflow and self-contained skill plugin bundle for Codex, Claude Code and Grok Build, including the shared engine, icons, license notices and local marketplace catalogs.
+- Behavioral checks for enterprise content and receipts, extracted plugin execution, export records, REST boundaries and local bot artifact generation.
+
+### Security
+
+- Updated vulnerable runtime and test dependencies, bounded Undici to its compatible 6.x line, and removed the unused `md-to-pdf` dependency from the Pandoc helper.
+
 ## [3.0.0] - 2026-08-29
 
 ### Changed

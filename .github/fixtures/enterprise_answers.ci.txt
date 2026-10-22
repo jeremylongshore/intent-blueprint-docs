@@ -1,17 +1,17 @@
-Monorepo JS/TS, Next.js, Node API, Postgres, Redis, K8s
-CRM, billing, analytics; PII and financial metadata
-SOX, GDPR, ISO 27001; SSO/MFA; enc in transit/at rest
-SAML SSO (Okta), SCIM, audit logs → Splunk (1y immut.)
-99.9% SLA; RTO 2h; RPO 15m; multi-AZ; DR weekly
-GitHub Flow; protected branches; 2 reviews; CAB for prod
-EU/US residency; 7y financial; 2y analytics; DSR process
-Dev/Stage/Prod; feature flags; ephemeral PR envs
-Stripe, Salesforce, Segment, SendGrid; auth & data mesh
-Blue-green; phased cutover; dual-write 2 weeks; backfill
-OTel, Prometheus, Grafana, PagerDuty; SLOs per service
-Risks: data leak, auth outage, billing errors, schema drift, vendor lock-in
-Vendors: DPAs, quarterly reviews, exit clauses; indep. backups
-Approvals: CTO, CISO, Finance, Legal; CAB sign-off
-Rollout: canary by region 10→50→100; tested rollback
-RACI: PM(A), Eng(R), Sec(C), Data(C), Ops(R), Execs(I)
-Metrics: MTTR<30m, auth>99.95%, disputes<0.1%, NPS+20
+TypeScript API with Postgres; integrate the existing employee booking service
+Identity provider and booking API; preserve existing reservation identifiers
+Internal employee contact details and booking metadata; no payment-card storage
+Provided policy requires GDPR review; applicability and controls need owner validation
+Encryption in transit and at rest; central secrets management and access logging
+Company SAML SSO with scoped service identities and least-privilege access
+Authentication and change events forwarded to the SIEM; retention needs confirmation
+Proposed RTO 2 hours and RPO 15 minutes; recovery exercise evidence is outstanding
+Protected changes with independent review; release approval by service owner
+Separate development, staging and production; use synthetic test data
+Existing identity provider, Postgres and calendar API; pin runtime dependencies
+Validate old and new reservation counts before cutover; preserve rollback snapshot
+Calendar processor contract and DPA review assigned to procurement
+Identity outage, duplicate reservations and residency errors require mitigations
+Service owner and security reviewer sign off; retain the decision record
+Internal canary before regional rollout; rollback on failed reservation validation
+Measure booking success and recovery time; baseline and dashboard owners need confirmation

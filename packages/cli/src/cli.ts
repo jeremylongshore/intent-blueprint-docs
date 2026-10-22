@@ -4,7 +4,7 @@
  * Generate enterprise documentation from the command line
  */
 
-import { Command } from 'commander';
+import { Command, Option } from 'commander';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
 import ora from 'ora';
@@ -23,7 +23,7 @@ const program = new Command();
 
 program
   .name('blueprint')
-  .description('Intent Blueprint - Enterprise AI Documentation Generator')
+  .description('Intent Blueprint - Evidence-backed project documentation workbooks')
   .version(VERSION);
 
 // Init command
@@ -100,8 +100,8 @@ program
   .description('Generate documentation with options')
   .option('-n, --name <name>', 'Project name')
   .option('-d, --description <desc>', 'Project description')
-  .option('-s, --scope <scope>', 'Scope: mvp, standard, comprehensive', 'standard')
-  .option('-a, --audience <audience>', 'Audience: startup, business, enterprise', 'business')
+  .addOption(new Option('-s, --scope <scope>', 'Documentation scope').choices([...SCOPES]).default('standard'))
+  .addOption(new Option('-a, --audience <audience>', 'Target audience').choices([...AUDIENCES]).default('business'))
   .option('-o, --output <dir>', 'Output directory')
   .action(async (options) => {
     let projectName = options.name;
@@ -154,14 +154,14 @@ program
 // Interview command - Adaptive AI-guided interview
 program
   .command('interview')
-  .description('Adaptive AI-guided documentation interview with smart detection')
+  .description('Adaptive documentation interview with conditional follow-up questions')
   .option('-q, --quick', 'Quick mode - just name and description')
   .action(async (options) => {
     console.log(chalk.blue('\n🎤 Intent Blueprint - Adaptive Interview\n'));
     console.log(chalk.dim('Answer questions to generate tailored documentation.'));
     console.log(chalk.dim('Questions adapt based on your answers.\n'));
 
-    const { InterviewEngine } = await import('./interview/index.js');
+    const { InterviewEngine, runAdaptiveInterview } = await import('./interview/index.js');
     const engine = new InterviewEngine();
 
     if (options.quick) {
@@ -182,63 +182,56 @@ program
 
       engine.setAnswers(basicAnswers);
     } else {
-      // Full adaptive interview
-      const groups = engine.getQuestionGroups();
-
-      for (const group of groups) {
-        if (!group.isActive || group.questions.length === 0) continue;
-
-        console.log(chalk.yellow(`\n━━━ ${group.name} ━━━`));
-        console.log(chalk.dim(group.description + '\n'));
-
-        for (const question of group.questions) {
-          // Skip if already answered or condition not met
-          const state = engine.getState();
-          if (state.answers[question.id] !== undefined) continue;
-
-          const promptConfig: Record<string, unknown> = {
-            name: 'answer',
-            message: chalk.cyan(question.text),
-          };
-
-          if (question.hint) {
-            promptConfig.message += chalk.dim(` (${question.hint})`);
+      let currentGroup = '';
+      try {
+        await runAdaptiveInterview(engine, async (question) => {
+          const group = engine.getQuestionGroups().find(item => item.questions.some(q => q.id === question.id));
+          if (group && group.id !== currentGroup) {
+            console.log(chalk.yellow(`\n━━━ ${group.name} ━━━`));
+            console.log(chalk.dim(group.description + '\n'));
+            currentGroup = group.id;
           }
+      const promptConfig: Record<string, unknown> = {
+        name: 'answer',
+        message: chalk.cyan(question.text),
+      };
 
-          switch (question.type) {
-            case 'text':
-              promptConfig.type = 'input';
-              if (question.default) promptConfig.default = question.default;
-              break;
-            case 'editor':
-              promptConfig.type = 'editor';
-              break;
-            case 'select':
-              promptConfig.type = 'list';
-              promptConfig.choices = question.options || [];
-              break;
-            case 'multiselect':
-              promptConfig.type = 'checkbox';
-              promptConfig.choices = question.options || [];
-              break;
-            case 'confirm':
-              promptConfig.type = 'confirm';
-              promptConfig.default = question.default ?? false;
-              break;
-            case 'number':
-              promptConfig.type = 'number';
-              if (question.default) promptConfig.default = question.default;
-              break;
-          }
+      if (question.hint) {
+        promptConfig.message += chalk.dim(` (${question.hint})`);
+      }
 
-          try {
-            const { answer } = await inquirer.prompt([promptConfig]);
-            engine.answer(question.id, answer);
-          } catch {
-            // User cancelled
-            break;
-          }
-        }
+      switch (question.type) {
+        case 'text':
+          promptConfig.type = 'input';
+          if (question.default) promptConfig.default = question.default;
+          break;
+        case 'editor':
+          promptConfig.type = 'editor';
+          break;
+        case 'select':
+          promptConfig.type = 'list';
+          promptConfig.choices = question.options || [];
+          break;
+        case 'multiselect':
+          promptConfig.type = 'checkbox';
+          promptConfig.choices = question.options || [];
+          break;
+        case 'confirm':
+          promptConfig.type = 'confirm';
+          promptConfig.default = question.default ?? false;
+          break;
+        case 'number':
+          promptConfig.type = 'number';
+          if (question.default) promptConfig.default = question.default;
+          break;
+      }
+          const { answer } = await inquirer.prompt([promptConfig]);
+          return answer;
+        });
+      } catch (error) {
+        console.error('Interview stopped:', error instanceof Error ? error.message : String(error));
+        process.exitCode = 1;
+        return;
       }
     }
 
@@ -312,7 +305,7 @@ program
 program
   .command('list')
   .description('List available templates')
-  .option('-s, --scope <scope>', 'Filter by scope: mvp, standard, comprehensive')
+  .addOption(new Option('-s, --scope <scope>', 'Filter by scope').choices([...SCOPES]))
   .action((options) => {
     console.log(chalk.blue('\n📚 Available Templates\n'));
 
@@ -589,7 +582,8 @@ program
   .command('sync')
   .description('Bi-directional sync with project management tools')
   .action(() => {
-    console.log(chalk.yellow('\n⚠️  Sync feature coming soon!\n'));
+    console.error('Bi-directional sync is not supported. Use an explicit export preview.');
+    process.exitCode = 1;
   });
 
 // Enterprise: API Server command
@@ -902,7 +896,7 @@ program
 // Enterprise: Model configuration
 program
   .command('model <action>')
-  .description('Configure AI models (list, use, test)')
+  .description('Inspect or test experimental model clients (list, info, test)')
   .option('-p, --provider <provider>', 'Provider: claude, openai, gemini, ollama')
   .option('-m, --model <model>', 'Model ID or alias')
   .option('-k, --key <key>', 'API key')
@@ -1589,4 +1583,7 @@ async function handleNotionExport(options: Record<string, unknown>) {
   }
 }
 
-program.parse();
+program.parseAsync().catch(error => {
+  console.error(error instanceof Error ? error.message : String(error));
+  process.exitCode = 1;
+});

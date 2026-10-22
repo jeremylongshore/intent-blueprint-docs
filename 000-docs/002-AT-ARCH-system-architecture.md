@@ -63,7 +63,7 @@ intent-blueprint-docs/
 
 ### Template Engine
 - Reads templates from `professional-templates/`
-- Prepends project/provenance context and replaces the legacy `{{DATE}}` token
+- Renders schema-backed workbooks with provided evidence and metadata; historical substitution is explicit legacy mode
 - Validates template completeness
 - Supports scope filtering (MVP/Standard/Comprehensive)
 
@@ -78,7 +78,7 @@ intent-blueprint-docs/
 - Uses standard stdio MCP so compatible hosts can connect without provider-specific business logic
 
 ### Enterprise Pipeline
-- 17-question structured intake (`scripts/run-enterprise.mjs`)
+- 17-question structured intake (`scripts/run-enterprise.mjs`) routed through the canonical schema engine with source hashes and persisted receipts
 - Governance controls and CODEOWNERS protection
 - CI/CD integration via GitHub Actions
 - Automated E2E validation

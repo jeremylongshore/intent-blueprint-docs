@@ -8,6 +8,8 @@
 
 **Scope:** Local code, clean lockfile installation, CLI/library/MCP package, enterprise generation, export preview, REST behavior, tests, release distribution, and documentation drift.
 
+This is a historical snapshot of the inspected commit. Subsequent repairs and verification are recorded in [the remediation evidence](014-AA-AUDT-functionality-remediation.md).
+
 ## 1. This system in five minutes
 
 **The documentation core works. The broader enterprise platform is only partially integrated, and the advertised v3 installation does not work.** A clean build passes; 222 tests pass with three optional evaluations skipped; an actual packed tarball installs in a separate consumer and runs its library, CLI, and four MCP tools. Those results establish a functioning workbook product, not complete enterprise functionality.

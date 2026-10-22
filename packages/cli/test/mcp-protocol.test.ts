@@ -50,4 +50,20 @@ describe('MCP protocol boundary', () => {
     expect(response.isError).toBe(true);
     expect(response.content[0]).toHaveProperty('text', expect.stringContaining('Unknown template ID'));
   });
+
+  it('carries enterprise discovery evidence through the protocol boundary', async () => {
+    const client = await connectedClient();
+    const response = await client.callTool({ name: 'blueprint_customize', arguments: {
+      templateId: '01_prd', projectName: 'Enterprise Proof', projectDescription: 'A governed integration.',
+      customFields: { owner: 'Integration Owner' },
+    } });
+    expect(response.isError).not.toBe(true);
+    expect(response.content[0]).toHaveProperty('text', expect.stringContaining('Integration Owner'));
+    const generated = await client.callTool({ name: 'blueprint_generate', arguments: {
+      projectName: 'Enterprise Proof', projectDescription: 'A governed integration.', audience: 'enterprise',
+      evidence: [{ id: 'E-1', claim: 'SSO required', state: 'verified', sourceRefs: [] }],
+    } });
+    expect(generated.isError).toBe(true);
+    expect(generated.content[0]).toHaveProperty('text', expect.stringContaining('Verified evidence requires'));
+  });
 });

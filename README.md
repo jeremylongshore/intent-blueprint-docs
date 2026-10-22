@@ -40,51 +40,81 @@ Copy or install `skills/blueprint-docs/` into any tool that supports the [Agent 
 
 The skill selects the smallest useful document set, builds an evidence register, connects related decisions and tests, and keeps assumptions and unknowns visible.
 
-## CLI
+## Working enterprise workflow
 
-Requirements: Node.js 20 or newer.
+Blueprint supports enterprise discovery and a comprehensive set of 22 draft workbooks through the same engine used by the CLI and MCP server. The assistant uses the enterprise skill guidance to turn those workbooks into project-specific analysis, decisions, controls and release evidence.
 
 ```bash
-npx --package @intentsolutions/blueprint@3.0.0 blueprint --help
+npm ci
+npm run build
+node scripts/run-enterprise.mjs --project MyProject --answers /path/to/17-answers.txt
+node scripts/verify-enterprise-output.mjs MyProject
 ```
 
-The published package contains the CLI, JavaScript library, MCP binary, and a generated mirror of the historical templates. There are not separate `-core` or `-mcp` npm packages.
+Discovery answers are preserved as provided evidence with source hashes. Output includes document metadata and generation receipts. Re-running into existing generated output requires `--force`. See the [enterprise workflow](skills/blueprint-docs/references/enterprise-workflow.md).
 
-## MCP
+## CLI and MCP from source
 
-Repository-local clients can use `.mcp.json`. An equivalent stdio configuration is:
+Requirements: Node.js 20 or newer. This source tree is version 3.0.0; that version has not been published to npm. Build this checkout to use the current engine:
+
+```bash
+npm ci
+npm run build
+node packages/cli/dist/cli.js --help
+node packages/cli/dist/cli.js generate --name MyProject --description "My project objective" --scope mvp --output ./docs/my-project
+```
+
+Repository-local `.mcp.json` and `.cursor/mcp.json` use the built server. Start clients from this repository, or configure an absolute path:
 
 ```json
 {
   "mcpServers": {
     "blueprint-docs": {
       "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "--package", "@intentsolutions/blueprint@3.0.0", "blueprint-mcp"]
+      "command": "node",
+      "args": ["/absolute/path/to/intent-blueprint-docs/packages/cli/dist/mcp/index.js"]
     }
   }
 }
 ```
 
-- `blueprint_list_templates` lists catalog-bound IDs.
-- `blueprint_interview` gathers project context.
-- `blueprint_customize` previews one workbook and rejects paths outside the catalog.
-- `blueprint_generate` previews by default; `writeFiles: true` is required for filesystem output.
+The four tools list templates, interview, customize, and generate. Generation previews by default; `writeFiles: true` explicitly enables filesystem output. The JavaScript library also accepts structured evidence and traceability graphs.
+
+## Install as a plugin
+
+```bash
+npm ci
+npm run plugin:build
+```
+
+This creates a self-contained skill plugin, bundled local engine, icons, license notices and submission ZIP in `dist/plugin/`. The bundle works without npm, credentials or network access after installation; the optional engine requires Node.js 20+.
+
+- **Codex:** add the generated local marketplace with `codex plugin marketplace add ./dist/plugin`, then install `blueprint-docs@intent-blueprint` with `codex plugin add`. Restart the session and invoke `$blueprint-docs`.
+- **Claude Code:** load `claude --plugin-dir ./dist/plugin/blueprint-docs`, then invoke `/blueprint-docs:blueprint-docs`.
+- **Grok Build:** load `grok --plugin-dir ./dist/plugin/blueprint-docs`, then invoke `/blueprint-docs`.
+- **Other Agent Skills hosts:** copy the bundled `skills/blueprint-docs/` directory, including references and runtime, to the host's skill location.
+
+See [plugin packaging and compatibility](000-docs/013-DR-GUID-plugin-packaging.md) for verification limits and artifact details. Packaging does not mean directory approval; the ZIP is prepared for later submission.
+
+## Supported surfaces
+
+The portable skill, enterprise workbook flow, library, CLI generation/interview, MCP, and explicit-record export previews are maintained together. Live exports require service credentials and authorization. Use `## TASK-ID: Title` or `## STORY-ID: Title` records with acceptance criteria for GitHub, Linear and Jira; workbook headings and ordinary lists are excluded.
+
+REST custom-template helpers, model-provider clients, team configuration, marketplace, analytics and delivery bots remain experimental modules. Bi-directional sync and webhook registration are not implemented. These are not a hosted enterprise service or a certification system.
 
 ## Development
 
 ```bash
-npm install
+npm ci
 npm run templates:check
-npm run test:docs
-npm run test:skills
 npm test
 npm run lint
-npm run build
 npm run verify
+npm run skill:check
+npm run plugin:build
 ```
 
-`professional-templates/core/` is the canonical historical corpus. Never edit `packages/cli/templates/core/` directly; run `npm run templates:sync`. CI and `npm run verify` fail if the package mirror drifts.
+`npm test` builds before running artifact tests, so it works from a clean checkout. `professional-templates/core/` is the canonical historical corpus. Never edit `packages/cli/templates/core/` directly; run `npm run templates:sync`.
 
 ## Documentation integrity
 

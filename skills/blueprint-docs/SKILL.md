@@ -1,10 +1,11 @@
 ---
 name: blueprint-docs
-description: Create, modernize, or review evidence-backed product and engineering documentation using the Intent Blueprint lifecycle. Use when a user asks for a PRD, architecture description, ADR, project brief, risk register, user stories, acceptance criteria, test plan, release plan, operational readiness review, postmortem, usability study, or a coordinated documentation set.
+description: Create and review evidence-backed project documentation, including enterprise requirements, architecture, controls, delivery and release readiness. Use when a user requests a project brief, PRD, ADR, risk register, test plan or coordinated documentation suite. Trigger with "plan this project", "enterprise docs", or "review these requirements".
 license: Apache-2.0
 metadata:
   author: Intent Solutions
   version: "3.0.0"
+  compatibility: Agent Skills hosts including Codex, Claude Code and Grok Build. Optional runtime requires Node.js 20+; authoring needs no API key.
 ---
 
 # Blueprint Docs
@@ -21,6 +22,12 @@ Create documentation that separates verified facts from analysis and unknowns. W
 6. Link the lifecycle graph: objective → requirement → decision/component → story → criterion → task → test/evidence → release → metric/risk.
 7. Apply [the quality contract](references/quality-contract.md). Use standards as alignment references, not unsupported certification claims.
 8. Report unresolved assumptions, conflicts, missing evidence, and the next human approval explicitly.
+
+## Enterprise projects
+
+For an enterprise documentation request, use [the enterprise workflow](references/enterprise-workflow.md). Preserve the requested comprehensive scope. Gather architecture, data classification, identity, security controls, audit, recovery, change management, vendors, migration, approval roles, rollout, and success measures. Turn those inputs into project-specific decisions and control/evidence records; a copied questionnaire is not a completed enterprise plan.
+
+For repeatable workbook creation or supplied enterprise intake, read [the runtime guide](references/runtime.md). Distributed plugin bundles include a local copy of the canonical engine, so generation does not require npm installation, a network connection, or a model API key. Source checkouts must first run `npm ci` and `npm run plugin:build` to produce that bundle. The host model then authors the actual documents from sources, preserving review state and unknowns.
 
 ## Output contract
 
@@ -39,3 +46,28 @@ When using the Blueprint CLI or MCP server, describe its output as a determinist
 - Record waivers with owner, reason, evidence, expiry, and compensating control. Never imply every control is waivable.
 
 For migration from the legacy corpus, read [the migration guide](references/migration-guide.md).
+
+## Examples
+
+- “Plan my booking service”: inspect the supplied context, choose a small useful set, and draft the brief and requirements with assumptions labeled.
+- “Create enterprise documentation for this integration”: use the enterprise workflow, map supplied controls to implementation and tests, and draft the requested comprehensive suite.
+- “Review this release plan”: inspect the plan and supporting evidence, report missing approvals and rollback proof, and distinguish recommendations from executed checks.
+
+A minimal runtime context for a comprehensive enterprise draft is:
+
+```json
+{
+  "projectName": "Team Booking",
+  "projectDescription": "A booking service integrated with the existing company identity provider.",
+  "scope": "comprehensive",
+  "audience": "enterprise"
+}
+```
+
+This input requests 22 draft workbooks. It supplies no control-test results or approval evidence, so those records remain unknown until sourced and reviewed.
+
+## Acceptance checks
+
+Before handing over documents, verify that the requested scope is covered, material claims have evidence states and sources, owners and unresolved actions are visible, and cross-document IDs agree. Compare the written artifact to the supplied objective and constraints. A generated file count or a successful render alone is insufficient.
+
+If the runtime is absent in a source-only skill install, author directly using the references or build the plugin when the user wants executable generation. If evidence conflicts, preserve both sources and report the decision needed. If a requested external export lacks credentials or authorization, return a local preview and identify the missing prerequisite.

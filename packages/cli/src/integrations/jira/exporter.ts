@@ -1,3 +1,4 @@
+import { parseTaskRecords } from '../tasks.js';
 /**
  * Jira Exporter
  * High-level export operations for Blueprint documents to Jira
@@ -307,23 +308,6 @@ export class JiraExporter {
       }
     }
 
-    // If no phases found, create default phases
-    if (phases.length === 0) {
-      const now = new Date();
-      phases.push(
-        {
-          name: 'Sprint 1 - Foundation',
-          startDate: now.toISOString().split('T')[0],
-          endDate: new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        },
-        {
-          name: 'Sprint 2 - Core Features',
-          startDate: new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          endDate: new Date(now.getTime() + 28 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        }
-      );
-    }
-
     return phases;
   }
 
@@ -348,61 +332,10 @@ export class JiraExporter {
    * Parse stories from markdown content
    */
   private parseStoriesFromMarkdown(content: string): JiraStoryItem[] {
-    const stories: JiraStoryItem[] = [];
-    const lines = content.split('\n');
-    let currentStory: JiraStoryItem | null = null;
-
-    for (const line of lines) {
-      // Match task items: - [ ] Task or * [ ] Task or - Task
-      const taskMatch = line.match(/^[\s]*[-*]\s*(?:\[[ x]\])?\s*(.+)/);
-
-      if (taskMatch) {
-        const taskText = taskMatch[1].trim();
-        const indent = line.match(/^(\s*)/)?.[1].length || 0;
-
-        // Extract priority
-        const priority = this.extractPriority(taskText);
-        const storyPoints = this.extractStoryPoints(taskText);
-        const labels = this.extractLabels(taskText);
-        const summary = this.cleanTaskTitle(taskText);
-
-        if (indent < 4 && summary.length > 3) {
-          // Top-level item = Story
-          currentStory = {
-            summary,
-            priority,
-            storyPoints,
-            labels,
-            tasks: [],
-          };
-          stories.push(currentStory);
-        } else if (currentStory && indent >= 4 && summary.length > 3) {
-          // Indented item = Sub-task
-          currentStory.tasks = currentStory.tasks || [];
-          currentStory.tasks.push({
-            summary,
-            priority,
-          });
-        }
-      }
-    }
-
-    // Also look for numbered lists as stories
-    const numberedRegex = /^\d+\.\s+(.+)/gm;
-    let match;
-    while ((match = numberedRegex.exec(content)) !== null) {
-      const taskText = match[1].trim();
-      if (taskText.length > 3 && !stories.some(s => s.summary === taskText)) {
-        stories.push({
-          summary: this.cleanTaskTitle(taskText),
-          priority: this.extractPriority(taskText),
-          storyPoints: this.extractStoryPoints(taskText),
-          labels: this.extractLabels(taskText),
-        });
-      }
-    }
-
-    return stories;
+    const priorities = { critical: 'Highest', high: 'High', medium: 'Medium', low: 'Low' } as const;
+    return parseTaskRecords(content).map(task => ({
+      summary: task.title, description: task.description, priority: priorities[task.priority],
+    }));
   }
 
   /**

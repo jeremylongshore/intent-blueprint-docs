@@ -22,6 +22,7 @@ function parseArgs(argv) {
 function sh(cmd, args, opts={}) {
   return new Promise((resolve, reject) => {
     const p = spawn(cmd, args, { stdio: opts.stdio ?? 'inherit', shell: false });
+    p.on('error', reject);
     p.on('close', (code) => code === 0 ? resolve() : reject(new Error(`${cmd} ${args.join(' ')} exited ${code}`)));
   });
 }
@@ -51,6 +52,8 @@ async function main() {
     process.exit(args.help ? 0 : 1);
   }
 
+  if (!/^[a-zA-Z0-9_][a-zA-Z0-9_-]*$/.test(args.project)) throw new Error('Invalid project name');
+  if (!args.force && fs.existsSync(path.join('completed-docs', args.project, '.metadata/generation-log.json'))) throw new Error('Output exists; use --force to replace it');
   await ensureTemplates();
 
   // Step 1: Enterprise intake
@@ -62,6 +65,7 @@ async function main() {
     await new Promise((resolve, reject) => {
       const p = spawn('node', cliArgs, { stdio: ['pipe','inherit','inherit'] });
       fs.createReadStream(args.answers).pipe(p.stdin);
+      p.on('error', reject);
       p.on('close', (code) => code === 0 ? resolve() : reject(new Error(`enterprise-cli exited ${code}`)));
     });
   } else {
@@ -74,6 +78,8 @@ async function main() {
   if (args.force) genArgs.push('--force');
   console.log('\n🧱 Generating enterprise docs…');
   await sh('node', genArgs);
+
+  await sh('node', ['scripts/verify-enterprise-output.mjs', args.project]);
 
   // Step 3: Quick audit
   const outDir = path.join(process.cwd(), 'completed-docs', args.project);

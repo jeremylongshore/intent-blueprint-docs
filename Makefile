@@ -11,9 +11,11 @@ clean:
 	@echo "Nothing to clean (no build artifacts)."
 
 enterprise:
+	@npm run build
 	@node scripts/run-enterprise.mjs --project "$(PROJECT)"
 
 enterprise-ci:
+	@npm run build
 	@node scripts/run-enterprise.mjs --project "$(PROJECT)" --answers "$(ANSWERS)"
 
 gen-skills:

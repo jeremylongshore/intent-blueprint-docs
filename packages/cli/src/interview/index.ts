@@ -14,6 +14,8 @@ export {
   type GapAnalysis,
 } from './engine.js';
 
+export { runAdaptiveInterview } from './runner.js';
+
 export {
   QUESTION_GROUPS,
   getActiveQuestions,

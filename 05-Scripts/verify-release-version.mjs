@@ -11,16 +11,17 @@ const cliPackage = JSON.parse(readFileSync(join(root, 'packages', 'cli', 'packag
 if (rootPackage.version !== cliPackage.version) {
   throw new Error(`Runtime version drift: root=${rootPackage.version}, cli=${cliPackage.version}`);
 }
-for (const path of ['.claude-plugin/plugin.json', '.codex-plugin/plugin.json', 'gemini-extension.json']) {
+for (const path of ['plugin.json', '.claude-plugin/plugin.json', '.codex-plugin/plugin.json', 'gemini-extension.json']) {
   const manifest = JSON.parse(readFileSync(join(root, path), 'utf8'));
   if (manifest.version !== cliPackage.version) {
     throw new Error(`Adapter version drift in ${path}: ${manifest.version} != ${cliPackage.version}`);
   }
 }
-const installTarget = `@intentsolutions/blueprint@${cliPackage.version}`;
-for (const path of ['.mcp.json', '.cursor/mcp.json', 'gemini-extension.json', 'README.md', '000-docs/004-DR-SPEC-mcp-server-integration.md']) {
-  if (!readFileSync(join(root, path), 'utf8').includes(installTarget)) {
-    throw new Error(`Adapter install target drift in ${path}: expected ${installTarget}`);
+for (const path of ['.mcp.json', '.cursor/mcp.json', 'gemini-extension.json']) {
+  const manifest = JSON.parse(readFileSync(join(root, path), 'utf8'));
+  const server = manifest.mcpServers?.['blueprint-docs'];
+  if (server?.command !== 'node' || JSON.stringify(server.args) !== JSON.stringify(['./packages/cli/dist/mcp/index.js'])) {
+    throw new Error(`Adapter entrypoint drift in ${path}: expected the repository-local built MCP server`);
   }
 }
 const skill = readFileSync(join(root, 'skills', 'blueprint-docs', 'SKILL.md'), 'utf8');
