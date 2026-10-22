@@ -1,8 +1,11 @@
 # Repository Functionality and Product Audit
 
-**Observed:** 2026-10-21 local / 2026-10-22 UTC  
-**Code inspected:** `1c5913bb18be8a908b08018f28978b486308024e`  
-**Audit bead:** `blueprint-44b`  
+**Observed:** 2026-10-21 local / 2026-10-22 UTC
+
+**Code inspected:** `1c5913bb18be8a908b08018f28978b486308024e`
+
+**Audit bead:** `blueprint-44b`
+
 **Scope:** Local code, clean lockfile installation, CLI/library/MCP package, enterprise generation, export preview, REST behavior, tests, release distribution, and documentation drift.
 
 ## 1. This system in five minutes
