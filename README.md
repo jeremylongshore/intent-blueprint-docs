@@ -6,16 +6,19 @@ For founders, product owners, agencies, and engineering teams. Blueprint asks qu
 
 ## Start in 30 seconds — no install
 
-Open this repository in your AI coding assistant and paste:
+Open a local copy of this repository in your AI coding assistant and paste:
 
 ```text
 Use the blueprint-docs skill in this repository to plan [describe your idea].
+Read skills/blueprint-docs/SKILL.md first.
 Ask me one question at a time. Label assumptions. Show the plan before creating files.
 ```
 
 You get a draft for review with evidence, assumptions, and unknowns marked. Samples and AI guesses never become approved facts.
 
-Example: “a booking site for my mobile dog-grooming business” becomes a ready-to-review plan—not 22 unnecessary files.
+Example: “a booking site for my mobile dog-grooming business” becomes a [draft project brief like this](examples/dog-grooming-project-brief.md). Start with the documents you need.
+
+Need a local copy? [Download the repository ZIP](https://github.com/jeremylongshore/intent-blueprint-docs/archive/refs/heads/main.zip), extract it, and open the folder in your assistant. This path needs no Node.js or package installation. Your assistant must be able to read local files.
 
 ## Browse the templates
 
@@ -51,6 +54,11 @@ These previews use the same fictional dog-grooming booking idea. They show the c
 | [Usability study](examples/template-previews/22_playtest_usability.md) | Plan a usability study and record findings. |
 
 [About these previews and how to regenerate them](examples/template-previews/README.md).
+
+## More ways to use Blueprint
+
+<details>
+<summary>Show setup, enterprise generation, plugins, and developer reference</summary>
 
 ## Choose another way to use it
 
@@ -154,5 +162,7 @@ npm run plugin:build
 ## Documentation integrity
 
 Blueprint uses a common metadata and evidence contract and recommends stable identifiers such as `REQ-`, `ADR-`, `RISK-`, `TEST-`, and `REL-`. Standards are alignment guides, not automatic certifications. See the [template-system audit](000-docs/011-AT-AUDT-template-system-modernization.md) for the complete assessment and migration roadmap.
+
+</details>
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and [LICENSE](LICENSE). Track durable work with Beads (`bd`).

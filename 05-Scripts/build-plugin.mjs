@@ -11,7 +11,7 @@ const out = join(root, 'dist', 'plugin');
 const stage = join(out, 'blueprint-docs');
 rmSync(stage, { recursive: true, force: true });
 mkdirSync(stage, { recursive: true });
-for (const path of ['skills', '.codex-plugin', '.claude-plugin', 'plugin.json', 'assets', 'README.md', 'CONTRIBUTING.md', '000-docs', 'LICENSE', 'SECURITY.md']) {
+for (const path of ['skills', '.codex-plugin', '.claude-plugin', 'plugin.json', 'assets', 'examples', 'professional-templates', 'README.md', 'CONTRIBUTING.md', '000-docs', 'LICENSE', 'SECURITY.md']) {
   cpSync(join(root, path), join(stage, path), { recursive: true });
 }
 // Catalogs belong to the distribution root, not inside the plugin ZIP.

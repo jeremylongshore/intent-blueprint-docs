@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { mkdtempSync, writeFileSync, readFileSync, readdirSync, rmSync, existsSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 
@@ -13,6 +13,15 @@ describe('self-contained skill plugin', () => {
       const extracted = spawnSync('unzip', ['-q', resolve('dist/plugin/blueprint-docs.zip'), '-d', join(dir, 'plugin')], { encoding: 'utf8' });
       expect(extracted.status, extracted.stderr).toBe(0);
       const plugin = join(dir, 'plugin');
+      const previews = join(plugin, 'examples/template-previews');
+      expect(readdirSync(previews).filter(file => /^\d{2}_.*\.md$/.test(file))).toHaveLength(22);
+      for (const file of ['README.md', 'examples/template-previews/README.md', 'examples/dog-grooming-project-brief.md']) {
+        for (const match of readFileSync(join(plugin, file), 'utf8').matchAll(/\]\(([^)]+)\)/g)) {
+          if (/^(?:https?:|#)/.test(match[1])) continue;
+          const target = resolve(dirname(join(plugin, file)), match[1].split('#')[0]);
+          expect(existsSync(target), `${file}: missing ${match[1]} in plugin ZIP`).toBe(true);
+        }
+      }
       const runtime = join(plugin, 'skills/blueprint-docs/runtime/dist/core/blueprint.mjs');
       const run = (args: string[]) => spawnSync('node', [runtime, ...args], { cwd: dir, encoding: 'utf8' });
       const catalog = run(['--list']);
