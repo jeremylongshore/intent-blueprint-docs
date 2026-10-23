@@ -1,0 +1,14 @@
+{
+  "projectName": "Mobile Dog Grooming (fictional example)",
+  "projectDescription": "Illustrative input: a booking site for a mobile dog-grooming business. Customers request an appointment; the groomer confirms availability. This is fictional, not verified business research.",
+  "scope": "comprehensive",
+  "audience": "business",
+  "projectType": "Booking website",
+  "generatedAt": "2026-10-22T00:00:00.000Z",
+  "assumptions": [
+    "For this illustration, one groomer manages incoming booking requests. Confirm this for a real project."
+  ],
+  "unknowns": [
+    "Service area, pricing, scheduling rules, payment needs, budget, and launch date have not been supplied."
+  ]
+}

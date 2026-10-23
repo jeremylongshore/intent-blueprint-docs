@@ -6,16 +6,59 @@ For founders, product owners, agencies, and engineering teams. Blueprint asks qu
 
 ## Start in 30 seconds — no install
 
-Open this repository in your AI coding assistant and paste:
+Open a local copy of this repository in your AI coding assistant and paste:
 
 ```text
 Use the blueprint-docs skill in this repository to plan [describe your idea].
+Read skills/blueprint-docs/SKILL.md first.
 Ask me one question at a time. Label assumptions. Show the plan before creating files.
 ```
 
 You get a draft for review with evidence, assumptions, and unknowns marked. Samples and AI guesses never become approved facts.
 
-Example: “a booking site for my mobile dog-grooming business” becomes a ready-to-review plan—not 22 unnecessary files.
+Example: “a booking site for my mobile dog-grooming business” becomes a [draft project brief like this](examples/dog-grooming-project-brief.md). Start with the documents you need.
+
+Need a local copy? [Download the repository ZIP](https://github.com/jeremylongshore/intent-blueprint-docs/archive/refs/heads/main.zip), extract it, and open the folder in your assistant. This path needs no Node.js or package installation. Your assistant must be able to read local files.
+
+## Browse the templates
+
+Click a template name to see what its draft looks like—no install needed.
+
+Start with the [project brief](examples/template-previews/14_project_brief.md), [requirements](examples/template-previews/01_prd.md), or [task plan](examples/template-previews/03_generate_tasks.md). Use only the documents your project needs.
+
+These previews use the same fictional dog-grooming booking idea. They show the current generator’s **starter workbooks**, with unanswered fields marked **Unknown**. Your assistant uses your answers and evidence to develop them into project-specific documents. They are not completed plans or approved research.
+
+| Template — click to preview | What it helps you do |
+|---|---|
+| [Product requirements (PRD)](examples/template-previews/01_prd.md) | What to build and why. |
+| [Technical decision (ADR)](examples/template-previews/02_adr.md) | Why a technical decision was made. |
+| [Task plan](examples/template-previews/03_generate_tasks.md) | Break the plan into tasks. |
+| [Task workflow](examples/template-previews/04_process_task_list.md) | Track tasks through completion. |
+| [Market research](examples/template-previews/05_market_research.md) | Plan research and record sourced findings. |
+| [System architecture](examples/template-previews/06_architecture.md) | How the system fits together. |
+| [Competitor analysis](examples/template-previews/07_competitor_analysis.md) | Compare alternatives using evidence. |
+| [User personas](examples/template-previews/08_personas.md) | Who the users are and what they need. |
+| [User journeys](examples/template-previews/09_user_journeys.md) | How users complete a goal. |
+| [User stories](examples/template-previews/10_user_stories.md) | Describe needs from a user’s perspective. |
+| [Acceptance criteria](examples/template-previews/11_acceptance_criteria.md) | Define what counts as working. |
+| [Quality gate](examples/template-previews/12_qa_gate.md) | Check quality before moving forward. |
+| [Risk register](examples/template-previews/13_risk_register.md) | Track risks and safeguards. |
+| [Project brief](examples/template-previews/14_project_brief.md) | The problem, goals, scope, and decision needed. |
+| [Brainstorming](examples/template-previews/15_brainstorming.md) | Capture ideas and decide what to explore. |
+| [Frontend specification](examples/template-previews/16_frontend_spec.md) | Specify screens, states, and interactions. |
+| [Test plan](examples/template-previews/17_test_plan.md) | What to test and how to prove it works. |
+| [Release plan](examples/template-previews/18_release_plan.md) | Plan rollout and rollback. |
+| [Operational readiness](examples/template-previews/19_operational_readiness.md) | Check support, recovery, and go-live readiness. |
+| [Metrics dashboard](examples/template-previews/20_metrics_dashboard.md) | Choose useful measures and their sources. |
+| [Postmortem](examples/template-previews/21_postmortem.md) | Learn from an incident and track improvements. |
+| [Usability study](examples/template-previews/22_playtest_usability.md) | Plan a usability study and record findings. |
+
+[About these previews and how to regenerate them](examples/template-previews/README.md).
+
+## More ways to use Blueprint
+
+<details>
+<summary>Show setup, enterprise generation, plugins, and developer reference</summary>
 
 ## Choose another way to use it
 
@@ -119,5 +162,7 @@ npm run plugin:build
 ## Documentation integrity
 
 Blueprint uses a common metadata and evidence contract and recommends stable identifiers such as `REQ-`, `ADR-`, `RISK-`, `TEST-`, and `REL-`. Standards are alignment guides, not automatic certifications. See the [template-system audit](000-docs/011-AT-AUDT-template-system-modernization.md) for the complete assessment and migration roadmap.
+
+</details>
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and [LICENSE](LICENSE). Track durable work with Beads (`bd`).
